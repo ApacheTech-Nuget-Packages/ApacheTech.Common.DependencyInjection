@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<ApplicationIcon>__Icon.ico</ApplicationIcon>
+		<AssemblyName>ApacheTech.Common.DependencyInjection</AssemblyName>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
+		<Authors>ApacheTech Solutions</Authors>
+
+		<Company>ApacheTech Solutions</Company>
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+		<Copyright>Copyright © ApacheTech Solutons, 2021. All Rights Reserved.</Copyright>
+
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>embedded</DebugType>
+		<Deterministic>true</Deterministic>
+		<Description>A minimal implmentation of the `Microsoft.Extensions.DependencyInjection` package, including the `ActivatorUtilities` class.</Description>
+
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
+
+		<LangVersion>latest</LangVersion>
+
+		<PackageIcon>__PreviewImage.png</PackageIcon>
+		<PackageLicenseFile>LICENCE.md</PackageLicenseFile>
+		<PackageProjectUrl>https://apachetech.co.uk</PackageProjectUrl>
+		<PackageReleaseNotes>Initial Release</PackageReleaseNotes>
+		<PackageTags>C#</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/ApacheTechSolutions/ApacheTech.Common.Extensions</RepositoryUrl>
+		<RootNamespace>ApacheTech.Common.Extensions</RootNamespace>
+
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<Title>Fluent Chat Commands</Title>
+
+		<Version>1.0.0.0</Version>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="README.md">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="LICENCE.md">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="__PreviewImage.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ApacheTech.Common.Extensions" Version="1.0.0" />
+  </ItemGroup>
+
+</Project>
