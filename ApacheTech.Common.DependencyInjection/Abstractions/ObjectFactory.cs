@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ApacheTech.Common.Extensions.Abstractions
+namespace ApacheTech.Common.DependencyInjection.Abstractions
 {
     /// <summary>
     /// The result of <see cref="ActivatorUtilities.CreateFactory(Type, Type[])"/>.

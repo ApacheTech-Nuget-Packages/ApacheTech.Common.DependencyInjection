@@ -3,8 +3,8 @@
 	<PropertyGroup>
 		<ApplicationIcon>__Icon.ico</ApplicationIcon>
 		<AssemblyName>ApacheTech.Common.DependencyInjection</AssemblyName>
-		<AssemblyVersion>1.0.0.0</AssemblyVersion>
-		<AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
+		<AssemblyVersion>1.0.1.0</AssemblyVersion>
+		<AssemblyFileVersion>1.0.1.0</AssemblyFileVersion>
 		<Authors>ApacheTech Solutions</Authors>
 
 		<Company>ApacheTech Solutions</Company>
@@ -32,13 +32,13 @@
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 
 		<RepositoryType>git</RepositoryType>
-		<RepositoryUrl>https://github.com/ApacheTechSolutions/ApacheTech.Common.Extensions</RepositoryUrl>
-		<RootNamespace>ApacheTech.Common.Extensions</RootNamespace>
+		<RepositoryUrl>https://github.com/ApacheTechSolutions/ApacheTech.Common.DependencyInjection</RepositoryUrl>
+		<RootNamespace>ApacheTech.Common.DependencyInjection</RootNamespace>
 
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<Title>Fluent Chat Commands</Title>
+		<Title>Minimal Dependency Injection Engine</Title>
 
-		<Version>1.0.0.0</Version>
+		<Version>1.0.1.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

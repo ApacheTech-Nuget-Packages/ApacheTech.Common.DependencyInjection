@@ -3,15 +3,15 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
-using ApacheTech.Common.Extensions.Abstractions;
-using ApacheTech.Common.Extensions.Annotation;
+using ApacheTech.Common.DependencyInjection.Abstractions;
+using ApacheTech.Common.DependencyInjection.Annotation;
 using ApacheTech.Common.Extensions.Reflection;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 
-namespace ApacheTech.Common.Extensions
+namespace ApacheTech.Common.DependencyInjection
 {
     /// <summary>
     ///     Helper code for the various activator services.

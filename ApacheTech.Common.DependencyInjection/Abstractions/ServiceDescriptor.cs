@@ -2,7 +2,7 @@
 
 // ReSharper disable UnusedMember.Global
 
-namespace ApacheTech.Common.Extensions.Abstractions
+namespace ApacheTech.Common.DependencyInjection.Abstractions
 {
     /// <summary>
     ///     Describes a service with its service type, implementation, and lifetime.

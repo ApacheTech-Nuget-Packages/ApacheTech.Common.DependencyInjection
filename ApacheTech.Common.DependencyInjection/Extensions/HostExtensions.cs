@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using ApacheTech.Common.Extensions.Abstractions;
-using ApacheTech.Common.Extensions.Annotation;
+using ApacheTech.Common.DependencyInjection.Abstractions;
+using ApacheTech.Common.DependencyInjection.Annotation;
 using ApacheTech.Common.Extensions.Reflection;
 
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 
-namespace ApacheTech.Common.Extensions.Extensions
+namespace ApacheTech.Common.DependencyInjection.Extensions
 {
     public static class HostExtensions
     {

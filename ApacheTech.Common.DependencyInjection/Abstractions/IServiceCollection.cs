@@ -3,7 +3,7 @@
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable UnusedMember.Global
 
-namespace ApacheTech.Common.Extensions.Abstractions
+namespace ApacheTech.Common.DependencyInjection.Abstractions
 {
     /// <summary>
     ///     An IOC Container, which holds references to registered types of services, and their instances.

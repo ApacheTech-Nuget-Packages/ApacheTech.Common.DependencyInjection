@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ApacheTech.Common.Extensions.Abstractions;
+using ApacheTech.Common.DependencyInjection.Abstractions;
 using ApacheTech.Common.Extensions.System;
 
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 
-namespace ApacheTech.Common.Extensions
+namespace ApacheTech.Common.DependencyInjection
 {
     /// <summary>
     ///     Defines a mechanism for retrieving a service object; that is, an object that provides custom support to other objects.

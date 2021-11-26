@@ -5,7 +5,7 @@
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 
-namespace ApacheTech.Common.Extensions.Annotation
+namespace ApacheTech.Common.DependencyInjection.Annotation
 {
     /// <summary>
     ///     Marks the constructor to be used when activating type using <see cref="ActivatorUtilities" />.

@@ -3,7 +3,7 @@
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable UnusedMember.Global
 
-namespace ApacheTech.Common.Extensions.Abstractions
+namespace ApacheTech.Common.DependencyInjection.Abstractions
 {
     /// <summary>
     ///     Defines a mechanism for retrieving a service object; that is, an object that provides custom support to other objects.

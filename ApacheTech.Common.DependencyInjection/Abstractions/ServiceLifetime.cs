@@ -1,4 +1,4 @@
-﻿namespace ApacheTech.Common.Extensions.Abstractions
+﻿namespace ApacheTech.Common.DependencyInjection.Abstractions
 {
     /// <summary>
     ///     Specifies the lifetime of a service in an <see cref="IServiceCollection" />.

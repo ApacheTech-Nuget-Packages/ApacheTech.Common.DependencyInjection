@@ -1,12 +1,12 @@
 ﻿using System;
-using ApacheTech.Common.Extensions.Abstractions;
+using ApacheTech.Common.DependencyInjection.Abstractions;
 
 // ReSharper disable EmptyConstructor
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 
-namespace ApacheTech.Common.Extensions.Annotation
+namespace ApacheTech.Common.DependencyInjection.Annotation
 {
     /// <summary>
     ///     Denotes that this class should be registered within the IOC container, when the mod is launched.

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using ApacheTech.Common.Extensions.Abstractions;
+using ApacheTech.Common.DependencyInjection.Abstractions;
 using ApacheTech.Common.Extensions.System;
 
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 
-namespace ApacheTech.Common.Extensions
+namespace ApacheTech.Common.DependencyInjection
 {
     /// <summary>
     ///     An IOC Container, which holds references to registered types of services, and their instances.
