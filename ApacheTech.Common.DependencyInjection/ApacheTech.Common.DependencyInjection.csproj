@@ -3,8 +3,8 @@
 	<PropertyGroup>
 		<ApplicationIcon>__Icon.ico</ApplicationIcon>
 		<AssemblyName>ApacheTech.Common.DependencyInjection</AssemblyName>
-		<AssemblyVersion>1.0.1.0</AssemblyVersion>
-		<AssemblyFileVersion>1.0.1.0</AssemblyFileVersion>
+		<AssemblyVersion>$(Version)</AssemblyVersion>
+		<AssemblyFileVersion>$(Version)</AssemblyFileVersion>
 		<Authors>ApacheTech Solutions</Authors>
 
 		<Company>ApacheTech Solutions</Company>
@@ -38,7 +38,7 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<Title>Minimal Dependency Injection Engine</Title>
 
-		<Version>1.0.1.0</Version>
+		<Version>1.1.0.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -57,14 +57,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ApacheTech.Common.Extensions" Version="1.0.0" />
+    <PackageReference Include="ApacheTech.Common.Extensions" Version="1.1.1" />
   </ItemGroup>
 
 </Project>
