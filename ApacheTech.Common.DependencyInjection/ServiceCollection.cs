@@ -39,6 +39,27 @@ namespace ApacheTech.Common.DependencyInjection
         /// <summary>
         ///     Registers a service as a singleton. Only one instance of the service will be created within the container.
         /// </summary>
+        /// <param name="implementationType">The type of implementation to use.</param>
+        /// <seealso cref="ServiceLifetime.Singleton" />
+        public void RegisterSingleton(Type implementationType)
+        {
+            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(implementationType, ServiceLifetime.Singleton));
+        }
+
+        /// <summary>
+        ///     Registers a service as a singleton. Only one instance of the service will be created within the container.
+        /// </summary>
+        /// <param name="serviceType">The type of service to register.</param>
+        /// <param name="implementationType">The type of implementation to use.</param>
+        /// <seealso cref="ServiceLifetime.Singleton" />
+        public void RegisterSingleton(Type serviceType, Type implementationType)
+        {
+            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(serviceType, implementationType, ServiceLifetime.Singleton));
+        }
+
+        /// <summary>
+        ///     Registers a service as a singleton. Only one instance of the service will be created within the container.
+        /// </summary>
         /// <typeparam name="TService">The type of service to register.</typeparam>
         /// <seealso cref="ServiceLifetime.Singleton"/>
         public void RegisterSingleton<TService>() where TService : class
@@ -77,6 +98,27 @@ namespace ApacheTech.Common.DependencyInjection
         public void RegisterSingleton<TService>(TService instance)
         {
             _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(typeof(TService), instance, ServiceLifetime.Singleton));
+        }
+
+        /// <summary>
+        /// Registers a service as a singleton. A new instance of the service will be created each time it is resolved.
+        /// </summary>
+        /// <param name="implementationType">The type of implementation to use.</param>
+        /// <seealso cref="ServiceLifetime.Transient" />
+        public void RegisterTransient(Type implementationType)
+        {
+            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(implementationType, ServiceLifetime.Transient));
+        }
+
+        /// <summary>
+        /// Registers a service as a singleton. A new instance of the service will be created each time it is resolved.
+        /// </summary>
+        /// <param name="serviceType">The type of service to register.</param>
+        /// <param name="implementationType">The type of implementation to use.</param>
+        /// <seealso cref="ServiceLifetime.Transient" />
+        public void RegisterTransient(Type serviceType, Type implementationType)
+        {
+            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(serviceType, implementationType, ServiceLifetime.Transient));
         }
 
         /// <summary>

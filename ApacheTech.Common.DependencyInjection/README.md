@@ -11,3 +11,5 @@ The original purpose of this package was to act as an IOC container for game mod
 ## Acknowledgement:
 
 Inspired by Nick Chapsas' video tutorial on bespoke dependency injection solutions.
+
+https://www.youtube.com/watch?v=NSVZa4JuTl8
