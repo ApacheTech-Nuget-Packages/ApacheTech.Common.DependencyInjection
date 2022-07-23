@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using ApacheTech.Common.DependencyInjection.Abstractions;
 using ApacheTech.Common.Extensions.System;
 
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 
@@ -13,7 +13,7 @@ namespace ApacheTech.Common.DependencyInjection
     ///     An IOC Container, which holds references to registered types of services, and their instances.
     /// </summary>
     /// <seealso cref="IServiceCollection" />
-    public partial class ServiceCollection : IServiceCollection
+    public partial class ServiceCollection : IServiceCollection, IDisposable
     {
         private readonly List<ServiceDescriptor> _serviceDescriptors = new();
         private readonly Dictionary<Type, Func<IServiceResolver, object>> _factories = new();
@@ -162,6 +162,14 @@ namespace ApacheTech.Common.DependencyInjection
         public IServiceResolver Build()
         {
             return _resolver;
+        }
+
+        /// <summary>
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            _resolver?.Dispose();
         }
     }
 }
