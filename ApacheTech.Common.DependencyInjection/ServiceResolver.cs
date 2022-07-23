@@ -120,9 +120,9 @@ namespace ApacheTech.Common.DependencyInjection
         /// </summary>
         public void Dispose()
         {
-            foreach (var service in _disposingServices.Where(service => service is not null))
+            foreach (var service in _disposingServices)
             {
-                service.Dispose();
+                service?.Dispose();
             }
             _disposingServices.Clear();
         }

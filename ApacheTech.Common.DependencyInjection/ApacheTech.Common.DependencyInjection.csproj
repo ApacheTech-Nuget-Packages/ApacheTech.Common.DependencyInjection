@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
+		<Version>1.3.0.0</Version>
+
 		<ApplicationIcon>__Icon.ico</ApplicationIcon>
 		<AssemblyName>ApacheTech.Common.DependencyInjection</AssemblyName>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
@@ -37,8 +39,6 @@
 
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<Title>Minimal Dependency Injection Engine</Title>
-
-		<Version>1.2.0.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -64,7 +64,7 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ApacheTech.Common.Extensions" Version="1.1.1" />
+    <PackageReference Include="ApacheTech.Common.Extensions" Version="1.2.0" />
   </ItemGroup>
 
 </Project>

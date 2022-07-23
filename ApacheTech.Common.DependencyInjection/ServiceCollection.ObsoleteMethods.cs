@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using ApacheTech.Common.DependencyInjection.Abstractions;
-using ApacheTech.Common.Extensions.System;
 
 // ReSharper disable UnusedType.Global
-// ReSharper disable UnusedMember.Global
 
 namespace ApacheTech.Common.DependencyInjection
 {
@@ -13,28 +9,18 @@ namespace ApacheTech.Common.DependencyInjection
     ///     An IOC Container, which holds references to registered types of services, and their instances.
     /// </summary>
     /// <seealso cref="IServiceCollection" />
-    public partial class ServiceCollection : IServiceCollection
+    /// ROADMAP: Remove class in v2.0.0.
+    public partial class ServiceCollection
     {
-        private readonly List<ServiceDescriptor> _serviceDescriptors = new();
-        private readonly Dictionary<Type, Func<IServiceResolver, object>> _factories = new();
-        private readonly IServiceResolver _resolver;
-
-        /// <summary>
-        /// 	Initialises a new instance of the <see cref="ServiceCollection" /> class.
-        /// </summary>
-        public ServiceCollection()
-        {
-            _resolver = new ServiceResolver(_serviceDescriptors, _factories);
-        }
-
         /// <summary>
         ///     Registers a raw service descriptor, pre-populated with meta-data for the service.
         /// </summary>
         /// <param name="descriptor">The pre-populated descriptor for the service to register.</param>
         /// <seealso cref="ServiceDescriptor" />
-        public void Add(ServiceDescriptor descriptor)
+        [Obsolete("Use Add() instead. Method will be removed during in the major release cycle.")]
+        public void Register(ServiceDescriptor descriptor)
         {
-            _serviceDescriptors.AddIfNotPresent(descriptor);
+            Add(descriptor);
         }
 
         /// <summary>
@@ -42,9 +28,10 @@ namespace ApacheTech.Common.DependencyInjection
         /// </summary>
         /// <param name="implementationType">The type of implementation to use.</param>
         /// <seealso cref="ServiceLifetime.Singleton" />
-        public void AddSingleton(Type implementationType)
+        [Obsolete("Use AddSingleton() instead. Method will be removed during in the major release cycle.")]
+        public void RegisterSingleton(Type implementationType)
         {
-            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(implementationType, ServiceLifetime.Singleton));
+            AddSingleton(implementationType);
         }
 
         /// <summary>
@@ -53,9 +40,10 @@ namespace ApacheTech.Common.DependencyInjection
         /// <param name="serviceType">The type of service to register.</param>
         /// <param name="implementationType">The type of implementation to use.</param>
         /// <seealso cref="ServiceLifetime.Singleton" />
-        public void AddSingleton(Type serviceType, Type implementationType)
+        [Obsolete("Use AddSingleton() instead. Method will be removed during in the major release cycle.")]
+        public void RegisterSingleton(Type serviceType, Type implementationType)
         {
-            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(serviceType, implementationType, ServiceLifetime.Singleton));
+            AddSingleton(serviceType, implementationType);
         }
 
         /// <summary>
@@ -63,9 +51,10 @@ namespace ApacheTech.Common.DependencyInjection
         /// </summary>
         /// <typeparam name="TService">The type of service to register.</typeparam>
         /// <seealso cref="ServiceLifetime.Singleton"/>
-        public void AddSingleton<TService>() where TService : class
+        [Obsolete("Use AddSingleton() instead. Method will be removed during in the major release cycle.")]
+        public void RegisterSingleton<TService>() where TService : class
         {
-            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(typeof(TService), ServiceLifetime.Singleton));
+            AddSingleton<TService>();
         }
 
         /// <summary>
@@ -74,9 +63,10 @@ namespace ApacheTech.Common.DependencyInjection
         /// <typeparam name="TService">The type of service to register.</typeparam>
         /// <typeparam name="TImplementation">The type of implementation to use.</typeparam>
         /// <seealso cref="ServiceLifetime.Singleton"/>
-        public void AddSingleton<TService, TImplementation>() where TImplementation : TService
+        [Obsolete("Use AddSingleton() instead. Method will be removed during in the major release cycle.")]
+        public void RegisterSingleton<TService, TImplementation>() where TImplementation : TService
         {
-            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(typeof(TService), typeof(TImplementation), ServiceLifetime.Singleton));
+            AddSingleton<TService, TImplementation>();
         }
 
         /// <summary>
@@ -85,10 +75,10 @@ namespace ApacheTech.Common.DependencyInjection
         /// <typeparam name="TService">The type of service to register.</typeparam>
         /// <param name="implementationFactory">The factory that creates the service.</param>
         /// <seealso cref="ServiceLifetime.Singleton"/>
-        public void AddSingleton<TService>(Func<IServiceResolver, TService> implementationFactory) where TService : class
+        [Obsolete("Use AddSingleton() instead. Method will be removed during in the major release cycle.")]
+        public void RegisterSingleton<TService>(Func<IServiceResolver, TService> implementationFactory) where TService : class
         {
-            _factories.Add(typeof(TService), implementationFactory);
-            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(typeof(TService), ServiceLifetime.Singleton));
+            AddSingleton(implementationFactory);
         }
 
         /// <summary>
@@ -96,9 +86,10 @@ namespace ApacheTech.Common.DependencyInjection
         /// </summary>
         /// <typeparam name="TService">The instance to register.</typeparam>
         /// <seealso cref="ServiceLifetime.Singleton"/>
-        public void AddSingleton<TService>(TService instance)
+        [Obsolete("Use AddSingleton() instead. Method will be removed during in the major release cycle.")]
+        public void RegisterSingleton<TService>(TService instance)
         {
-            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(typeof(TService), instance, ServiceLifetime.Singleton));
+            AddSingleton(instance);
         }
 
         /// <summary>
@@ -106,9 +97,10 @@ namespace ApacheTech.Common.DependencyInjection
         /// </summary>
         /// <param name="implementationType">The type of implementation to use.</param>
         /// <seealso cref="ServiceLifetime.Transient" />
-        public void AddTransient(Type implementationType)
+        [Obsolete("Use AddTransient() instead. Method will be removed during in the major release cycle.")]
+        public void RegisterTransient(Type implementationType)
         {
-            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(implementationType, ServiceLifetime.Transient));
+            AddTransient(implementationType);
         }
 
         /// <summary>
@@ -117,9 +109,10 @@ namespace ApacheTech.Common.DependencyInjection
         /// <param name="serviceType">The type of service to register.</param>
         /// <param name="implementationType">The type of implementation to use.</param>
         /// <seealso cref="ServiceLifetime.Transient" />
-        public void AddTransient(Type serviceType, Type implementationType)
+        [Obsolete("Use AddTransient() instead. Method will be removed during in the major release cycle.")]
+        public void RegisterTransient(Type serviceType, Type implementationType)
         {
-            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(serviceType, implementationType, ServiceLifetime.Transient));
+            AddTransient(serviceType, implementationType);
         }
 
         /// <summary>
@@ -127,9 +120,10 @@ namespace ApacheTech.Common.DependencyInjection
         /// </summary>
         /// <typeparam name="TService">The type of service to register.</typeparam>
         /// <seealso cref="ServiceLifetime.Transient"/>
-        public void AddTransient<TService>() where TService : class
+        [Obsolete("Use AddTransient() instead. Method will be removed during in the major release cycle.")]
+        public void RegisterTransient<TService>() where TService : class
         {
-            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(typeof(TService), ServiceLifetime.Transient));
+            AddTransient<TService>();
         }
 
         /// <summary>
@@ -138,9 +132,10 @@ namespace ApacheTech.Common.DependencyInjection
         /// <typeparam name="TService">The type of service to register.</typeparam>
         /// <typeparam name="TImplementation">The type of implementation to use.</typeparam>
         /// <seealso cref="ServiceLifetime.Transient"/>
-        public void AddTransient<TService, TImplementation>() where TImplementation : TService
+        [Obsolete("Use AddTransient() instead. Method will be removed during in the major release cycle.")]
+        public void RegisterTransient<TService, TImplementation>() where TImplementation : TService
         {
-            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(typeof(TService), typeof(TImplementation), ServiceLifetime.Transient));
+            AddTransient<TService, TImplementation>();
         }
 
         /// <summary>
@@ -149,19 +144,10 @@ namespace ApacheTech.Common.DependencyInjection
         /// <typeparam name="TService">The type of service to register.</typeparam>
         /// <param name="implementationFactory">The factory that creates the service.</param>
         /// <seealso cref="ServiceLifetime.Transient"/>
-        public void AddTransient<TService>(Func<IServiceResolver, TService> implementationFactory) where TService : class
+        [Obsolete("Use AddTransient() instead. Method will be removed during in the major release cycle.")]
+        public void RegisterTransient<TService>(Func<IServiceResolver, TService> implementationFactory) where TService : class
         {
-            _factories.Add(typeof(TService), implementationFactory);
-            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(typeof(TService), ServiceLifetime.Transient));
-        }
-
-        /// <summary>
-        ///     Build a service resolver, to access services within this collection.
-        /// </summary>
-        /// <returns>An IOC Service Resolver.</returns>
-        public IServiceResolver Build()
-        {
-            return _resolver;
+            AddTransient(implementationFactory);
         }
     }
 }
