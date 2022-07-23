@@ -11,7 +11,7 @@
 
 		<Company>ApacheTech Solutions</Company>
 		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-		<Copyright>Copyright © ApacheTech Solutons, 2021. All Rights Reserved.</Copyright>
+		<Copyright>Copyright © ApacheTech Solutons, 2022. All Rights Reserved.</Copyright>
 
 		<DebugSymbols>true</DebugSymbols>
 		<DebugType>embedded</DebugType>
