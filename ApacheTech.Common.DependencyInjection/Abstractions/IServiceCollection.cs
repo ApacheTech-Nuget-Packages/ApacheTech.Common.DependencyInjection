@@ -6,100 +6,100 @@
 namespace ApacheTech.Common.DependencyInjection.Abstractions
 {
     /// <summary>
-    ///     An IOC Container, which holds references to registered types of services, and their instances.
+    ///     An IOC Container, which holds references to Added types of services, and their instances.
     /// </summary>
-    public interface IServiceCollection
+    public partial interface IServiceCollection
     {
         /// <summary>
-        ///     Registers a raw service descriptor, pre-populated with meta-data for the service.
+        ///     Adds a raw service descriptor, pre-populated with meta-data for the service.
         /// </summary>
-        /// <param name="descriptor">The pre-populated descriptor for the service to register.</param>
+        /// <param name="descriptor">The pre-populated descriptor for the service to add.</param>
         /// <seealso cref="ServiceDescriptor"/>
-        void Register(ServiceDescriptor descriptor);
+        void Add(ServiceDescriptor descriptor);
 
         /// <summary>
-        ///     Registers a service as a singleton. Only one instance of the service will be created within the container.
+        ///     Adds a service as a singleton. Only one instance of the service will be created within the container.
         /// </summary>
         /// <param name="implementationType">The type of implementation to use.</param>
         /// <seealso cref="ServiceLifetime.Singleton"/>
-        void RegisterSingleton(Type implementationType);
+        void AddSingleton(Type implementationType);
 
         /// <summary>
-        ///     Registers a service as a singleton. Only one instance of the service will be created within the container.
+        ///     Adds a service as a singleton. Only one instance of the service will be created within the container.
         /// </summary>
-        /// <param name="serviceType">The type of service to register.</param>
+        /// <param name="serviceType">The type of service to add.</param>
         /// <param name="implementationType">The type of implementation to use.</param>
         /// <seealso cref="ServiceLifetime.Singleton"/>
-        void RegisterSingleton(Type serviceType, Type implementationType);
+        void AddSingleton(Type serviceType, Type implementationType);
 
         /// <summary>
-        ///     Registers a service as a singleton. Only one instance of the service will be created within the container.
+        ///     Adds a service as a singleton. Only one instance of the service will be created within the container.
         /// </summary>
-        /// <typeparam name="TService">The type of service to register.</typeparam>
+        /// <typeparam name="TService">The type of service to add.</typeparam>
         /// <seealso cref="ServiceLifetime.Singleton"/>
         /// 
-        void RegisterSingleton<TService>() where TService : class;
+        void AddSingleton<TService>() where TService : class;
 
         /// <summary>
-        ///     Registers a service as a singleton. Only one instance of the service will be created within the container.
+        ///     Adds a service as a singleton. Only one instance of the service will be created within the container.
         /// </summary>
-        /// <typeparam name="TService">The type of service to register.</typeparam>
+        /// <typeparam name="TService">The type of service to add.</typeparam>
         /// <typeparam name="TImplementation">The type of implementation to use.</typeparam>
         /// <seealso cref="ServiceLifetime.Singleton"/>
-        void RegisterSingleton<TService, TImplementation>() where TImplementation : TService;
+        void AddSingleton<TService, TImplementation>() where TImplementation : TService;
 
         /// <summary>
-        ///     Registers a service as a singleton. Only one instance of the service will be created within the container.
+        ///     Adds a service as a singleton. Only one instance of the service will be created within the container.
         /// </summary>
-        /// <typeparam name="TService">The type of service to register.</typeparam>
+        /// <typeparam name="TService">The type of service to add.</typeparam>
         /// <param name="implementationFactory">The factory that creates the service.</param>
         /// <seealso cref="ServiceLifetime.Singleton"/>
-        void RegisterSingleton<TService>(Func<IServiceResolver, TService> implementationFactory) where TService : class;
+        void AddSingleton<TService>(Func<IServiceResolver, TService> implementationFactory) where TService : class;
 
         /// <summary>
-        ///     Registers a service as a singleton. Only one instance of the service will be created within the container.
+        ///     Adds a service as a singleton. Only one instance of the service will be created within the container.
         /// </summary>
-        /// <typeparam name="TService">The instance to register.</typeparam>
+        /// <typeparam name="TService">The instance to add.</typeparam>
         /// <seealso cref="ServiceLifetime.Singleton"/>
-        void RegisterSingleton<TService>(TService implementation);
+        void AddSingleton<TService>(TService implementation);
 
         /// <summary>
-        ///     Registers a service as a singleton. A new instance of the service will be created each time it is resolved.
+        ///     Adds a service as a singleton. A new instance of the service will be created each time it is resolved.
         /// </summary>
         /// <param name="implementationType">The type of implementation to use.</param>
         /// <seealso cref="ServiceLifetime.Transient"/>
-        void RegisterTransient(Type implementationType);
+        void AddTransient(Type implementationType);
 
         /// <summary>
-        ///     Registers a service as a singleton. A new instance of the service will be created each time it is resolved.
+        ///     Adds a service as a singleton. A new instance of the service will be created each time it is resolved.
         /// </summary>
-        /// <param name="serviceType">The type of service to register.</param>
+        /// <param name="serviceType">The type of service to add.</param>
         /// <param name="implementationType">The type of implementation to use.</param>
         /// <seealso cref="ServiceLifetime.Transient"/>
-        void RegisterTransient(Type serviceType, Type implementationType);
+        void AddTransient(Type serviceType, Type implementationType);
 
         /// <summary>
-        ///     Registers a service as a singleton. A new instance of the service will be created each time it is resolved.
+        ///     Adds a service as a singleton. A new instance of the service will be created each time it is resolved.
         /// </summary>
-        /// <typeparam name="TService">The type of service to register.</typeparam>
+        /// <typeparam name="TService">The type of service to add.</typeparam>
         /// <seealso cref="ServiceLifetime.Transient"/>
-        void RegisterTransient<TService>() where TService : class;
+        void AddTransient<TService>() where TService : class;
 
         /// <summary>
-        ///     Registers a service as a singleton. A new instance of the service will be created each time it is resolved.
+        ///     Adds a service as a singleton. A new instance of the service will be created each time it is resolved.
         /// </summary>
-        /// <typeparam name="TService">The type of service to register.</typeparam>
+        /// <typeparam name="TService">The type of service to add.</typeparam>
         /// <typeparam name="TImplementation">The type of implementation to use.</typeparam>
         /// <seealso cref="ServiceLifetime.Transient"/>
-        void RegisterTransient<TService, TImplementation>() where TImplementation : TService;
+        void AddTransient<TService, TImplementation>() where TImplementation : TService;
 
         /// <summary>
-        ///     Registers a service as a singleton. A new instance of the service will be created each time it is resolved.
+        ///     Adds a service as a singleton. A new instance of the service will be created each time it is resolved.
         /// </summary>
-        /// <typeparam name="TService">The type of service to register.</typeparam>
+        /// <typeparam name="TService">The type of service to add.</typeparam>
         /// <param name="implementationFactory">The factory that creates the service.</param>
         /// <seealso cref="ServiceLifetime.Transient"/>
-        void RegisterTransient<TService>(Func<IServiceResolver, TService> implementationFactory) where TService : class;
+        void AddTransient<TService>(Func<IServiceResolver, TService> implementationFactory) where TService : class;
 
         /// <summary>
         ///     Build a service resolver, to access services within this collection.
