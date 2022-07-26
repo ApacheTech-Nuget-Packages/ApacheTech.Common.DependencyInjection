@@ -51,24 +51,24 @@ namespace ApacheTech.Common.DependencyInjection
             }
             
             var implementationType = descriptor.ImplementationType ?? descriptor.ServiceType;
-            if (implementationType.IsAbstract)
+
+            object implementation;
+            if (_factories.ContainsKey(implementationType))
             {
-                throw new TypeLoadException("Cannot instantiate abstract classes.");
+                implementation = _factories[implementationType](this);
+                return CacheService(descriptor, implementation);
             }
+
             if (implementationType.IsInterface)
             {
                 throw new TypeLoadException("Cannot instantiate interfaces.");
             }
-
-            var implementation = _factories.ContainsKey(implementationType)
-                ? _factories[implementationType](this)
-                : CreateInstance(implementationType);
-
-            if (descriptor.Lifetime == ServiceLifetime.Singleton)
+            if (implementationType.IsAbstract)
             {
-                descriptor.Implementation = implementation;
+                throw new TypeLoadException("Cannot instantiate abstract classes.");
             }
-            return HandleDisposableInstances(implementation);
+            implementation = CreateInstance(implementationType);
+            return CacheService(descriptor, implementation);
         }
 
         /// <summary>
@@ -120,11 +120,20 @@ namespace ApacheTech.Common.DependencyInjection
         /// </summary>
         public void Dispose()
         {
-            foreach (var service in _disposingServices.Where(service => service is not null))
+            foreach (var service in _disposingServices)
             {
-                service.Dispose();
+                service?.Dispose();
             }
             _disposingServices.Clear();
+        }
+
+        private object CacheService(ServiceDescriptor descriptor, object implementation)
+        {
+            if (descriptor.Lifetime == ServiceLifetime.Singleton)
+            {
+                descriptor.Implementation = implementation;
+            }
+            return HandleDisposableInstances(implementation);
         }
 
         private TService HandleDisposableInstances<TService>(TService service)
