@@ -38,6 +38,19 @@ namespace ApacheTech.Common.DependencyInjection
         }
 
         /// <summary>
+        ///     Adds raw service descriptors, pre-populated with meta-data for the service.
+        /// </summary>
+        /// <param name="descriptors">The pre-populated descriptors for the service to add.</param>
+        /// <seealso cref="ServiceDescriptor" />
+        public void Add(IEnumerable<ServiceDescriptor> descriptors)
+        {
+            foreach (var descriptor in descriptors)
+            {
+                _serviceDescriptors.AddIfNotPresent(descriptor);
+            }
+        }
+
+        /// <summary>
         ///     Registers a service as a singleton. Only one instance of the service will be created within the container.
         /// </summary>
         /// <param name="implementationType">The type of implementation to use.</param>
@@ -76,6 +89,19 @@ namespace ApacheTech.Common.DependencyInjection
         /// <seealso cref="ServiceLifetime.Singleton"/>
         public void AddSingleton<TService, TImplementation>() where TImplementation : TService
         {
+            _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(typeof(TService), typeof(TImplementation), ServiceLifetime.Singleton));
+        }
+
+        /// <summary>
+        ///     Adds a service as a singleton. Only one instance of the service will be created within the container.
+        /// </summary>
+        /// <typeparam name="TService">The type of service to add.</typeparam>
+        /// <typeparam name="TImplementation">The type of implementation to use.</typeparam>
+        /// <param name="implementationFactory">The factory that creates the service.</param>
+        /// <seealso cref="ServiceLifetime.Singleton" />
+        public void AddSingleton<TService, TImplementation>(Func<IServiceResolver, TService> implementationFactory) where TImplementation : TService where TService : class
+        {
+            _factories.Add(typeof(TService), implementationFactory);
             _serviceDescriptors.AddIfNotPresent(new ServiceDescriptor(typeof(TService), typeof(TImplementation), ServiceLifetime.Singleton));
         }
 

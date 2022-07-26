@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable UnusedMember.Global
@@ -16,6 +17,13 @@ namespace ApacheTech.Common.DependencyInjection.Abstractions
         /// <param name="descriptor">The pre-populated descriptor for the service to add.</param>
         /// <seealso cref="ServiceDescriptor"/>
         void Add(ServiceDescriptor descriptor);
+
+        /// <summary>
+        ///     Adds raw service descriptors, pre-populated with meta-data for the service.
+        /// </summary>
+        /// <param name="descriptors">The pre-populated descriptors for the service to add.</param>
+        /// <seealso cref="ServiceDescriptor"/>
+        void Add(IEnumerable<ServiceDescriptor> descriptors);
 
         /// <summary>
         ///     Adds a service as a singleton. Only one instance of the service will be created within the container.
@@ -47,6 +55,17 @@ namespace ApacheTech.Common.DependencyInjection.Abstractions
         /// <typeparam name="TImplementation">The type of implementation to use.</typeparam>
         /// <seealso cref="ServiceLifetime.Singleton"/>
         void AddSingleton<TService, TImplementation>() where TImplementation : TService;
+
+        /// <summary>
+        ///     Adds a service as a singleton. Only one instance of the service will be created within the container.
+        /// </summary>
+        /// <typeparam name="TService">The type of service to add.</typeparam>
+        /// <typeparam name="TImplementation">The type of implementation to use.</typeparam>
+        /// <param name="implementationFactory">The factory that creates the service.</param>
+        /// <seealso cref="ServiceLifetime.Singleton"/>
+        void AddSingleton<TService, TImplementation>(Func<IServiceResolver, TService> implementationFactory) 
+            where TImplementation : TService 
+            where TService : class;
 
         /// <summary>
         ///     Adds a service as a singleton. Only one instance of the service will be created within the container.
