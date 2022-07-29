@@ -1,5 +1,6 @@
 ﻿using System;
 using ApacheTech.Common.DependencyInjection.Abstractions;
+using ApacheTech.Common.DependencyInjection.Abstractions.Extensions;
 
 namespace ApacheTech.Common.DependencyInjection.Extensions
 {

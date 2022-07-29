@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Version>2.1.0.0</Version>
 
 		<ApplicationIcon>__Icon.ico</ApplicationIcon>
-		<AssemblyName>ApacheTech.Common.DependencyInjection</AssemblyName>
+		<AssemblyName>ApacheTech.Common.DependencyInjection.Abstractions</AssemblyName>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<AssemblyFileVersion>$(Version)</AssemblyFileVersion>
 		<Authors>ApacheTech Solutions</Authors>
@@ -35,7 +35,7 @@
 
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/ApacheTechSolutions/ApacheTech.Common.DependencyInjection</RepositoryUrl>
-		<RootNamespace>ApacheTech.Common.DependencyInjection</RootNamespace>
+		<RootNamespace>ApacheTech.Common.DependencyInjection.Abstractions</RootNamespace>
 
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<Title>Minimal Dependency Injection Engine</Title>
@@ -44,11 +44,11 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -67,15 +67,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ApacheTech.Common.DependencyInjection.Abstractions" Version="2.1.0" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="ApacheTech.Common.Extensions" Version="1.2.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="ApacheTech.Common.Extensions" Version="1.2.0" />
+	</ItemGroup>
 
 </Project>

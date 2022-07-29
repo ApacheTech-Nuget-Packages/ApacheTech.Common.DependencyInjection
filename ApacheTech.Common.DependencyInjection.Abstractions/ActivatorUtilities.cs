@@ -3,15 +3,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
-using ApacheTech.Common.DependencyInjection.Abstractions;
-using ApacheTech.Common.DependencyInjection.Annotation;
 using ApacheTech.Common.Extensions.Reflection;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 
-namespace ApacheTech.Common.DependencyInjection
+namespace ApacheTech.Common.DependencyInjection.Abstractions
 {
     /// <summary>
     ///     Helper code for the various activator services.
@@ -43,7 +41,7 @@ namespace ApacheTech.Common.DependencyInjection
                 {
                     var matcher = new ConstructorMatcher(constructor);
 
-                    var isPreferred = constructor.HasCustomAttribute<ServiceProviderConstructorAttribute>();
+                    var isPreferred = constructor.HasCustomAttribute<InjectableConstructorAttribute>();
                     var length = matcher.Match(parameters);
 
                     if (isPreferred)
@@ -256,7 +254,7 @@ namespace ApacheTech.Common.DependencyInjection
                     continue;
                 }
                 
-                if (!constructor.HasCustomAttribute<ServiceProviderConstructorAttribute>()) continue;
+                if (!constructor.HasCustomAttribute<InjectableConstructorAttribute>()) continue;
                 if (seenPreferred)
                 {
                     ThrowMultipleConstructorsMarkedWithAttributeException();

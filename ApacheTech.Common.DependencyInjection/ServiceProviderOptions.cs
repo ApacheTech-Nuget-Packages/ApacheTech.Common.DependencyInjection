@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ApacheTech.Common.DependencyInjection.Abstractions
+namespace ApacheTech.Common.DependencyInjection
 {
     /// <summary>
     ///     Options for configuring various behaviors of the default <see cref="IServiceProvider"/> implementation.
@@ -8,7 +8,7 @@ namespace ApacheTech.Common.DependencyInjection.Abstractions
     public class ServiceProviderOptions
     {
         // Avoid allocating objects in the default case
-        internal static readonly ServiceProviderOptions Default = new();
+        internal static ServiceProviderOptions Default { get; } = new();
 
         /// <summary>
         ///     Determines whether to dispose implementations that implement

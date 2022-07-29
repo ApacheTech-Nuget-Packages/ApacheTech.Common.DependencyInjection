@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace ApacheTech.Common.DependencyInjection.Extensions
+namespace ApacheTech.Common.DependencyInjection.Abstractions.Extensions
 {
     /// <summary>
     ///     Extension methods for objects.

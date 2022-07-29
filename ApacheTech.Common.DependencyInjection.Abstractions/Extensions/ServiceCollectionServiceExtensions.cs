@@ -1,7 +1,10 @@
 ﻿using System;
-using ApacheTech.Common.DependencyInjection.Abstractions;
 
-namespace ApacheTech.Common.DependencyInjection.Extensions
+// ReSharper disable UnusedType.Global
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
+
+namespace ApacheTech.Common.DependencyInjection.Abstractions.Extensions
 {
     /// <summary>
     ///     Extension methods for adding services to an <see cref="IServiceCollection" />.

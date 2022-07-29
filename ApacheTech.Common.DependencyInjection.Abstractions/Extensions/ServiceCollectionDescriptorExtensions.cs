@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ApacheTech.Common.DependencyInjection.Abstractions;
 
 // ReSharper disable PossibleMultipleEnumeration
 // ReSharper disable UnusedMethodReturnValue.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 
-namespace ApacheTech.Common.DependencyInjection.Extensions
+namespace ApacheTech.Common.DependencyInjection.Abstractions.Extensions
 {
     /// <summary>
     ///     Extension methods for adding and removing services to an <see cref="IServiceCollection" />.

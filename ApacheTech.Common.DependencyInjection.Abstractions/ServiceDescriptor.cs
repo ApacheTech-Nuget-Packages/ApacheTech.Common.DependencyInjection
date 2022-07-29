@@ -1,8 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
-using ApacheTech.Common.DependencyInjection.Extensions;
+using System.Runtime.CompilerServices;
+using ApacheTech.Common.DependencyInjection.Abstractions.Extensions;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
+
+[assembly: InternalsVisibleTo("ApacheTech.Common.DependencyInjection")]
 
 namespace ApacheTech.Common.DependencyInjection.Abstractions
 {

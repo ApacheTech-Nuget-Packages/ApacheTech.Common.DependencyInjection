@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using ApacheTech.Common.DependencyInjection.Abstractions;
-using ApacheTech.Common.Extensions.System;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedType.Global

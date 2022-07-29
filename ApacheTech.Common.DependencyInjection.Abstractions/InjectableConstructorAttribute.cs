@@ -5,18 +5,18 @@
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 
-namespace ApacheTech.Common.DependencyInjection.Annotation
+namespace ApacheTech.Common.DependencyInjection.Abstractions
 {
     /// <summary>
     ///     Marks the constructor to be used when activating type using <see cref="ActivatorUtilities" />.
     /// </summary>
     [AttributeUsage(AttributeTargets.Constructor)]
-    public class ServiceProviderConstructorAttribute : Attribute
+    public class InjectableConstructorAttribute : Attribute
     {
         /// <summary>
-        /// 	Initialises a new instance of the <see cref="ServiceProviderConstructorAttribute"/> class.
+        /// 	Initialises a new instance of the <see cref="InjectableConstructorAttribute"/> class.
         /// </summary>
-        public ServiceProviderConstructorAttribute()
+        public InjectableConstructorAttribute()
         {
         }
     }
