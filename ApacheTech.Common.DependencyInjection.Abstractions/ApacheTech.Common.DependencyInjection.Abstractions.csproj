@@ -1,7 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.1.0.0</Version>
+		<Version>2.1.1.0</Version>
+		<PackageReleaseNotes>
+			ApacheTech.Common.DependencyInjection.Abstractions v2.1.1
+
+			- Added: Debug configuration now uses project references, to aid debugging.
+		</PackageReleaseNotes>
 
 		<ApplicationIcon>__Icon.ico</ApplicationIcon>
 		<AssemblyName>ApacheTech.Common.DependencyInjection.Abstractions</AssemblyName>
@@ -11,7 +16,7 @@
 
 		<Company>ApacheTech Solutions</Company>
 		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-		<Copyright>Copyright © ApacheTech Solutons, 2022. All Rights Reserved.</Copyright>
+		<Copyright>Copyright © ApacheTech Solutons, 2023. All Rights Reserved.</Copyright>
 
 		<DebugSymbols>true</DebugSymbols>
 		<DebugType>embedded</DebugType>
@@ -28,7 +33,6 @@
 		<PackageIcon>__PreviewImage.png</PackageIcon>
 		<PackageLicenseFile>LICENCE.md</PackageLicenseFile>
 		<PackageProjectUrl>https://apachetech.co.uk</PackageProjectUrl>
-		<PackageReleaseNotes>Initial Release</PackageReleaseNotes>
 		<PackageTags>C#</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -73,8 +77,12 @@
 		</PackageReference>
 	</ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="ApacheTech.Common.Extensions" Version="1.2.0" />
+	<ItemGroup Condition="'$(Configuration)' == 'Release'">
+		<PackageReference Include="ApacheTech.Common.Extensions" Version="2.0.1" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)' != 'Release'">
+	  <ProjectReference Include="..\..\ApacheTech.Common.Extensions\ApacheTech.Common.Extensions\ApacheTech.Common.Extensions.csproj" />
 	</ItemGroup>
 
 </Project>
