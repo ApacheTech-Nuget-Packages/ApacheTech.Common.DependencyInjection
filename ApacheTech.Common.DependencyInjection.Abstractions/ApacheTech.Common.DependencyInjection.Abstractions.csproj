@@ -26,7 +26,6 @@
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
 
 		<LangVersion>latest</LangVersion>
 
