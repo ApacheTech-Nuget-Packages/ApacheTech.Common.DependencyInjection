@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.1.1.0</Version>
+		<Version>2.2.0.0</Version>
 		<PackageReleaseNotes>
-			ApacheTech.Common.DependencyInjection.Abstractions v2.1.1
+			ApacheTech.Common.DependencyInjection.Abstractions v2.2.0
 
-			- Added: Debug configuration now uses project references, to aid debugging.
+			Added: GetService now resolves IEnumerable{T} implicitly, as well as explicitly.
+			Added: IServiceProvider.GetServices{T}() extension method to Abstractions.
 		</PackageReleaseNotes>
 
 		<ApplicationIcon>__Icon.ico</ApplicationIcon>

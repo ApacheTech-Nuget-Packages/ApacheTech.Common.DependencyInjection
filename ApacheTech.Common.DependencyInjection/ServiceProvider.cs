@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ApacheTech.Common.DependencyInjection.Abstractions;
@@ -32,41 +34,27 @@ namespace ApacheTech.Common.DependencyInjection
         /// </summary>
         /// <param name="serviceType">An object that specifies the type of service object to get.</param>
         /// <returns>
-        /// A service object of type <paramref name="serviceType">serviceType</paramref>.   -or-  null if there is no service object of type <paramref name="serviceType">serviceType</paramref>.
+        ///     A service object of type <paramref name="serviceType">serviceType</paramref>.   -or-  null if there is no service object of type <paramref name="serviceType">serviceType</paramref>.
         /// </returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public object GetService(Type serviceType)
+        public object? GetService(Type serviceType)
         {
+            // Check for explicitly registered IEnumerable<T>
             var descriptor = _serviceDescriptors.SingleOrDefault(p => p.ServiceType == serviceType);
-            if (descriptor is null)
+            if (descriptor is not null)
             {
-                throw new KeyNotFoundException($"No service of type {serviceType.Name} has been registered.");
-            }
-            if (descriptor.Implementation is not null)
-            {
-                return descriptor.Implementation;
+                return ResolveDescriptor(descriptor);
             }
 
-            var implementationType = descriptor.ImplementationType ?? descriptor.ServiceType;
-
-            object implementation;
-            if (descriptor.ImplementationFactory is not null)
+            // Handle IEnumerable<T> when no explicit registration exists
+            if (serviceType.IsGenericType && serviceType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             {
-                implementation = descriptor.ImplementationFactory(this);
-                return CacheService(descriptor, implementation);
+                var itemType = serviceType.GetGenericArguments()[0];
+                return ResolveEnumerable(itemType);
             }
 
-            if (implementationType.IsInterface)
-            {
-                throw new TypeLoadException("Cannot instantiate interfaces.");
-            }
-            if (implementationType.IsAbstract)
-            {
-                throw new TypeLoadException("Cannot instantiate abstract classes.");
-            }
-            implementation = ActivatorUtilities.CreateInstance(this, implementationType);
-            return CacheService(descriptor, implementation);
+            return null;
         }
+
 
         /// <summary>
         ///     Disposes all services that require disposing.
@@ -83,6 +71,51 @@ namespace ApacheTech.Common.DependencyInjection
             {
                 implementation?.Dispose();
             }
+        }
+
+        private object? ResolveDescriptor(ServiceDescriptor descriptor)
+        {
+            if (descriptor.Implementation is not null)
+            {
+                return descriptor.Implementation;
+            }
+
+            if (descriptor.ImplementationFactory is not null)
+            {
+                return CacheService(descriptor, descriptor.ImplementationFactory(this));
+            }
+
+            var implementationType = descriptor.ImplementationType ?? descriptor.ServiceType;
+
+            if (implementationType.IsInterface)
+            {
+                throw new TypeLoadException($"Cannot instantiate interface: {implementationType.FullName}");
+            }
+
+            if (implementationType.IsAbstract)
+            {
+                throw new TypeLoadException($"Cannot instantiate abstract class: {implementationType.FullName}");
+            }
+
+            var implementation = ActivatorUtilities.CreateInstance(this, implementationType);
+            return CacheService(descriptor, implementation);
+        }
+
+        private object ResolveEnumerable(Type itemType)
+        {
+            var implementations = _serviceDescriptors
+                .Where(d => d.ServiceType == itemType)
+                .Select(ResolveDescriptor)
+                .Where(instance => instance != null)
+                .ToList();
+
+            var array = Array.CreateInstance(itemType, implementations.Count);
+            for (int i = 0; i < implementations.Count; i++)
+            {
+                array.SetValue(implementations[i], i);
+            }
+
+            return array;
         }
 
         private static object CacheService(ServiceDescriptor descriptor, object implementation)

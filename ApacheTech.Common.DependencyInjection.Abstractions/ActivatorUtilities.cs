@@ -41,7 +41,7 @@ namespace ApacheTech.Common.DependencyInjection.Abstractions
                 {
                     var matcher = new ConstructorMatcher(constructor);
 
-                    var isPreferred = constructor.HasCustomAttribute<InjectableConstructorAttribute>();
+                    var isPreferred = constructor.HasCustomAttribute<ActivatorUtilitiesConstructor>();
                     var length = matcher.Match(parameters);
 
                     if (isPreferred)
@@ -254,7 +254,7 @@ namespace ApacheTech.Common.DependencyInjection.Abstractions
                     continue;
                 }
                 
-                if (!constructor.HasCustomAttribute<InjectableConstructorAttribute>()) continue;
+                if (!constructor.HasCustomAttribute<ActivatorUtilitiesConstructor>()) continue;
                 if (seenPreferred)
                 {
                     ThrowMultipleConstructorsMarkedWithAttributeException();

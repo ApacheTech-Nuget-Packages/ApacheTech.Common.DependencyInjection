@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 // ReSharper disable UnusedType.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -15,9 +16,9 @@ namespace ApacheTech.Common.DependencyInjection.Abstractions.Extensions
         /// <summary>
         ///     Creates an object of a specified type, using the IOC Container to resolve dependencies.
         /// </summary>
-        /// <param name="serviceProvider">And object that provides access to the services collection.</param>
+        /// <param name="serviceProvider">And object that provides access to the service collection.</param>
         /// <param name="serviceType">An object that specifies the type of service object to get.</param>
-        /// <param name="args">An optional list of arguments, sent the the constructor of the instantiated class.</param>
+        /// <param name="args">An optional list of arguments, sent the constructor of the instantiated class.</param>
         /// <returns>A service object of type <paramref name="serviceType" />.
         /// 
         /// -or-
@@ -32,8 +33,8 @@ namespace ApacheTech.Common.DependencyInjection.Abstractions.Extensions
         ///     Creates an object of a specified type, using the IOC Container to resolve dependencies.
         /// </summary>
         /// <typeparam name="T">The type of object to create.</typeparam>
-        /// <param name="serviceProvider">And object that provides access to the services collection.</param>
-        /// <param name="args">An optional list of arguments, sent the the constructor of the instantiated class.</param>
+        /// <param name="serviceProvider">And object that provides access to the service collection.</param>
+        /// <param name="args">An optional list of arguments, sent the constructor of the instantiated class.</param>
         /// <returns>An object of type <typeparamref name="T" />.
         /// 
         /// -or-
@@ -47,7 +48,7 @@ namespace ApacheTech.Common.DependencyInjection.Abstractions.Extensions
         /// <summary>
         ///     Gets the service object of the specified type.
         /// </summary>
-        /// <param name="serviceProvider">And object that provides access to the services collection.</param>
+        /// <param name="serviceProvider">And object that provides access to the service collection.</param>
         /// <typeparam name="T">The type of service object to get.</typeparam>
         /// <returns>A service object of type <typeparamref name="T" />.
         /// 
@@ -57,6 +58,35 @@ namespace ApacheTech.Common.DependencyInjection.Abstractions.Extensions
         public static T Resolve<T>(this IServiceProvider serviceProvider)
         {
             return (T)serviceProvider.GetService(typeof(T));
+        }
+
+        /// <summary>
+        ///     Gets the service object of the specified type.
+        /// </summary>
+        /// <param name="serviceProvider">And object that provides access to the service collection.</param>
+        /// <typeparam name="T">The type of service object to get.</typeparam>
+        /// <returns>A service object of type <typeparamref name="T" />.
+        /// 
+        /// -or-
+        /// 
+        /// <see langword="null" /> if there is no service object of type <typeparamref name="T" />.</returns>
+        public static T GetRequiredService<T>(this IServiceProvider serviceProvider)
+        {
+            var service = serviceProvider.GetService(typeof(T));
+            if (service is not null) return (T)service;
+            throw new KeyNotFoundException($"No service of type {typeof(T).Name} has been registered.");
+        }
+
+
+        /// <summary>
+        ///     Retrieves all registered services of the specified type from the service provider.
+        /// </summary>
+        /// <typeparam name="T">The type of services to retrieve.</typeparam>
+        /// <param name="serviceProvider">The service provider instance.</param>
+        /// <returns>An enumerable of all services of the specified type.</returns>
+        public static IEnumerable<T> GetServices<T>(this IServiceProvider serviceProvider)
+        {
+            return (IEnumerable<T>)serviceProvider.GetService(typeof(IEnumerable<T>)) ?? [];
         }
     }
 }

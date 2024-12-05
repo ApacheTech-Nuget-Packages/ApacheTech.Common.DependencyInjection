@@ -11,12 +11,12 @@ namespace ApacheTech.Common.DependencyInjection.Abstractions
     ///     Marks the constructor to be used when activating type using <see cref="ActivatorUtilities" />.
     /// </summary>
     [AttributeUsage(AttributeTargets.Constructor)]
-    public class InjectableConstructorAttribute : Attribute
+    public class ActivatorUtilitiesConstructor : Attribute
     {
         /// <summary>
-        /// 	Initialises a new instance of the <see cref="InjectableConstructorAttribute"/> class.
+        /// 	Initialises a new instance of the <see cref="ActivatorUtilitiesConstructor"/> class.
         /// </summary>
-        public InjectableConstructorAttribute()
+        public ActivatorUtilitiesConstructor()
         {
         }
     }
