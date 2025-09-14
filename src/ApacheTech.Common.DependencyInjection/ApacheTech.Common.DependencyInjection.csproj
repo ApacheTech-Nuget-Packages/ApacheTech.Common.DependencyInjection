@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.3.0.0</Version>
+		<Version>2.3.1.0</Version>
 		<Nullable>enable</Nullable>
 		<PackageReleaseNotes>
-			ApacheTech.Common.DependencyInjection v2.3.0
+			ApacheTech.Common.DependencyInjection v2.3.1
 
 			Added: Per Assembly disposal of services.
 			Build: Updated to .NET 8.0 SDK.

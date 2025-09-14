@@ -26,5 +26,5 @@ public class ServiceProviderOptions
     ///     If <see cref="DisposeImplementations"/> is <see langword="true"/>, and this property
     ///      is not null, only implementations from the specified assemblies will be disposed.
     /// </summary>
-    public List<Assembly>? DisposableAssemblies { get; }
+    public List<Assembly>? DisposableAssemblies { get; set; }
 }
