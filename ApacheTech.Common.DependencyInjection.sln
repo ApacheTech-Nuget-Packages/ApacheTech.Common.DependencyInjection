@@ -3,34 +3,31 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32721.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApacheTech.Common.DependencyInjection", "ApacheTech.Common.DependencyInjection\ApacheTech.Common.DependencyInjection.csproj", "{545558F3-2E21-42BA-8BD8-DCB850F29D88}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{48CF9495-A37B-4AEC-8DF1-2573FC848027}"
 	ProjectSection(SolutionItems) = preProject
+		LICENCE.md = LICENCE.md
+		pack.bat = pack.bat
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApacheTech.Common.DependencyInjection.Abstractions", "ApacheTech.Common.DependencyInjection.Abstractions\ApacheTech.Common.DependencyInjection.Abstractions.csproj", "{B87B1D69-C9FC-42FD-A12C-78DF433ED9A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApacheTech.Common.DependencyInjection", "src\ApacheTech.Common.DependencyInjection\ApacheTech.Common.DependencyInjection.csproj", "{1D61A61F-5C5C-2DBC-5BA5-93676E4ACE58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApacheTech.Common.DependencyInjection.Abstractions", "src\ApacheTech.Common.DependencyInjection.Abstractions\ApacheTech.Common.DependencyInjection.Abstractions.csproj", "{94F41B57-D760-5691-1F07-24ED914E540D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Package|Any CPU = Package|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{545558F3-2E21-42BA-8BD8-DCB850F29D88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{545558F3-2E21-42BA-8BD8-DCB850F29D88}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{545558F3-2E21-42BA-8BD8-DCB850F29D88}.Package|Any CPU.ActiveCfg = Debug|Any CPU
-		{545558F3-2E21-42BA-8BD8-DCB850F29D88}.Package|Any CPU.Build.0 = Debug|Any CPU
-		{545558F3-2E21-42BA-8BD8-DCB850F29D88}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{545558F3-2E21-42BA-8BD8-DCB850F29D88}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B87B1D69-C9FC-42FD-A12C-78DF433ED9A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B87B1D69-C9FC-42FD-A12C-78DF433ED9A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B87B1D69-C9FC-42FD-A12C-78DF433ED9A5}.Package|Any CPU.ActiveCfg = Debug|Any CPU
-		{B87B1D69-C9FC-42FD-A12C-78DF433ED9A5}.Package|Any CPU.Build.0 = Debug|Any CPU
-		{B87B1D69-C9FC-42FD-A12C-78DF433ED9A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B87B1D69-C9FC-42FD-A12C-78DF433ED9A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D61A61F-5C5C-2DBC-5BA5-93676E4ACE58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D61A61F-5C5C-2DBC-5BA5-93676E4ACE58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D61A61F-5C5C-2DBC-5BA5-93676E4ACE58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D61A61F-5C5C-2DBC-5BA5-93676E4ACE58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94F41B57-D760-5691-1F07-24ED914E540D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94F41B57-D760-5691-1F07-24ED914E540D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94F41B57-D760-5691-1F07-24ED914E540D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94F41B57-D760-5691-1F07-24ED914E540D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
