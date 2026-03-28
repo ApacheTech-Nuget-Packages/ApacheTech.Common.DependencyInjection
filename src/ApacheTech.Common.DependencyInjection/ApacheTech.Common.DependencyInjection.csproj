@@ -63,8 +63,8 @@
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(Configuration)' != 'Debug' ">
-		<PackageReference Include="ApacheTech.Common.Extensions" Version="2.1.1" />
-		<PackageReference Include="ApacheTech.Common.DependencyInjection.Abstractions" Version="2.3.0" />
+		<PackageReference Include="ApacheTech.Common.Extensions" Version="2.2.0" />
+		<PackageReference Include="ApacheTech.Common.DependencyInjection.Abstractions" Version="2.4.0" />
 	</ItemGroup>
 	<ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
 		<ProjectReference Include="..\ApacheTech.Common.DependencyInjection.Abstractions\ApacheTech.Common.DependencyInjection.Abstractions.csproj" />

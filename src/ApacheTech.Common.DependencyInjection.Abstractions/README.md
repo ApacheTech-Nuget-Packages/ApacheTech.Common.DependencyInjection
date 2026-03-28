@@ -2,8 +2,6 @@
 
 This is a minimal implmentation of the `Microsoft.Extensions.DependencyInjection` package, including the `ActivatorUtilities` class.
 
-Allows for Singleton and Transient services to be registered with an IOC container. Scoped services have not been implemented.
-
 This is designed as a very lightweight, and minimalistic, but this may come at a cost. This package doesn't come with a lot of the safety measures, and fallbacks that the full package contains. It was written from the ground up, other than the `ActivatorUtilities` class. Therefore, it might not play well with thrid-party ICO wrappers like AutoFac, or CastleWindsor. It should not be seen as a replacement for Microsoft.Extensions.DependencyInjection.
 
 The original purpose of this package was to act as an IOC container for game mods, where a full Enterprise level package simply comes with too much bloat. This is ideal for those kinds of scenarios, when you just need a quick and simple IOC container, without all the bloat.
@@ -30,14 +28,13 @@ The goal is to offer a tiny, dependency-free alternative suitable for small proj
 
 ## Features
 
-- Register transient and singleton services via descriptors or convenience extension methods.
+- Register transient, scoped, and singleton services via descriptors or convenience extension methods.
 - Resolve services from an `IServiceProvider` instance.
 - Create instances that mix explicit constructor arguments with services from the provider via `ActivatorUtilities`.
 - Scan assemblies and register types annotated with `SingletonAttribute` or `TransientAttribute`.
 
 ## Important Notes / Limitations
 
-- This implementation intentionally omits scoped services.
 - It is minimal and does not implement all safeguards, diagnostic features or integrations that the official Microsoft DI provides.
 - Behaviour may differ from the official DI in edge cases - test before replacing the official DI in critical systems.
 
