@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using ApacheTech.Common.DependencyInjection.Abstractions.Extensions;
 
 namespace ApacheTech.Common.DependencyInjection.Abstractions;
@@ -26,7 +25,7 @@ public class ServiceDescriptor
     ///     Gets the concrete implementation, which gets returned to the user.
     /// </summary>
     /// <value>The implementation of the service.</value>
-    public object? Implementation { get; internal set; }
+    public object? ImplementationInstance { get; internal set; }
 
     /// <summary>
     ///     Specifies the lifetime of a service in an <see cref="IServiceCollection" />.
@@ -45,7 +44,7 @@ public class ServiceDescriptor
     internal Type? GetImplementationType()
     {
         if (ImplementationType is not null) return ImplementationType;
-        if (Implementation is not null) return Implementation.GetType();
+        if (ImplementationInstance is not null) return ImplementationInstance.GetType();
         if (ImplementationFactory is null) return null;
 
         var typeArguments = ImplementationFactory.GetType().GenericTypeArguments;
@@ -61,7 +60,7 @@ public class ServiceDescriptor
     public ServiceDescriptor(object implementation, ServiceLifetime lifetime)
     {
         ServiceType = implementation.GetType();
-        Implementation = implementation;
+        ImplementationInstance = implementation;
         ImplementationType = implementation.GetType();
         Lifetime = lifetime;
     }
@@ -101,7 +100,7 @@ public class ServiceDescriptor
         ServiceType = serviceType;
         Lifetime = lifetime;
         ImplementationType = implementation.GetType();
-        Implementation = implementation;
+        ImplementationInstance = implementation;
     }
 
     /// <summary>
@@ -129,7 +128,7 @@ public class ServiceDescriptor
     {
         serviceType.ThrowIfNull();
         instance.ThrowIfNull();
-        Implementation = instance;
+        ImplementationInstance = instance;
     }
 
 #region Static Factory Constructors

@@ -1,13 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.3.0.0</Version>
+		<Version>2.4.0.0</Version>
 		<Nullable>enable</Nullable>
 		<PackageReleaseNotes>
 			ApacheTech.Common.DependencyInjection.Abstractions v2.3.0
 
-			Added: Per Assembly disposal of services.
-			Build: Updated to .NET 8.0 SDK.
+			Added: Scoped Services
 		</PackageReleaseNotes>
 
 		<ApplicationIcon>__Icon.ico</ApplicationIcon>
@@ -74,7 +73,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="ApacheTech.Common.Extensions" Version="2.1.1" />
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.201">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
