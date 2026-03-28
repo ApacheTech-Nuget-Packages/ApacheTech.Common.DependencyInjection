@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ApacheTech.Common.DependencyInjection.Abstractions\ApacheTech.Common.DependencyInjection.Abstractions.csproj" />
-    <ProjectReference Include="..\ApacheTech.Common.DependencyInjection\ApacheTech.Common.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\src\ApacheTech.Common.DependencyInjection.Abstractions\ApacheTech.Common.DependencyInjection.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\ApacheTech.Common.DependencyInjection\ApacheTech.Common.DependencyInjection.csproj" />
   </ItemGroup>
 
   <ItemGroup>
