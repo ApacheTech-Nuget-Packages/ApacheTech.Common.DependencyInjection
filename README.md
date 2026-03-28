@@ -20,27 +20,31 @@ This repository provides a compact, focused implementation of dependency injecti
 
 Key components include:
 
-- `IServiceCollection` - a lightweight service collection interface.
-- `ServiceCollection` - a simple list-backed implementation of `IServiceCollection`.
+- `IServiceCollection` - a lightweight service collection interface (just `IList<ServiceDescriptor>`), intended to feel familiar to users of `Microsoft.Extensions.DependencyInjection`.
+- `ServiceCollection` - a simple list-backed implementation of `IServiceCollection` backed by `List<ServiceDescriptor>`.
 - `ServiceDescriptor` - describes a service registration (service type, implementation, factory and lifetime).
 - `ActivatorUtilities` - helpers to instantiate types using constructor injection from an `IServiceProvider`.
 - Attribute-based registration helpers in the `Annotation` namespace: `SingletonAttribute`, `TransientAttribute`, and scanning helpers to register annotated types from assemblies.
+- `ServiceCollectionDescriptorExtensions` - extension helpers for adding, trying to add and replacing descriptors (e.g. `TryAddTransient`, `TryAddSingleton`).
+- `ServiceProviderServiceExtensions` - helpers to resolve services from an `IServiceProvider` (`GetRequiredService`, `GetServices`, `CreateInstance`, `CreateScope`).
 
 This project is intentionally small and dependency-light. It aims to provide the core features most commonly needed for composition and injection without the additional complexity of the full Microsoft implementation.
 
 ## Features
 
-- Register transient and singleton services using descriptors or extension methods.
+- Register transient, scoped and singleton services using descriptors or extension methods.
 - Register instances and factories for custom construction logic.
 - Mix explicit constructor arguments with container-resolved services using `ActivatorUtilities`.
 - Scan assemblies and register types annotated with `SingletonAttribute` or `TransientAttribute`.
-- Lightweight, zero-dependency implementation intended for constrained environments.
+- Lightweight, zero-dependency implementation intended for constrained environments (e.g. game mods, tools, scripting hosts).
+- Familiar-feeling API surface modelled on `Microsoft.Extensions.DependencyInjection`, but with a much smaller implementation.
 
 ## Important Notes and Limitations
 
 - This implementation does not include all the diagnostics, fallback behaviour or extension points present in the official Microsoft DI.
 - Behaviour may differ from the official DI in edge cases - test carefully before replacing the official DI in production systems.
 - There is no guarantee of compatibility with third-party IOC containers or wrappers.
+- `ServiceCollection` only exposes `Add` via the `ICollection<ServiceDescriptor>` interface; most code should use the provided extension methods (`Add`, `TryAdd`, `TryAddTransient`, `TryAddSingleton`, etc.) instead of manipulating the underlying list directly.
 
 ## Quick Start
 
@@ -54,11 +58,14 @@ var services = new ApacheTech.Common.DependencyInjection.ServiceCollection();
 // Register concrete type as singleton
 services.TryAddSingleton<MyService>();
 
+// Register scoped service
+services.TryAddScoped<IMyScopedService, MyScopedService>();
+
 // Register service with implementation
 services.TryAddTransient(typeof(IMyService), typeof(MyService));
 
 // Register using factory
-services.TryAddSingleton(typeof(IMyService), sp => new MyService(sp.GetService(typeof(IOther))));
+services.TryAddSingleton(typeof(IMyService), sp => new MyService(sp.GetRequiredService<IOther>()));
 ```
 
 2. Resolve Services via an `IServiceProvider`:
@@ -67,7 +74,15 @@ This repository provides a minimal set of `IServiceProvider` extension helpers. 
 
 ```csharp
 IServiceProvider provider = /* obtain provider from your composition root */;
+
+// Resolve required service (throws if missing)
 var svc = provider.GetRequiredService<MyService>();
+
+// Resolve optional service
+var maybe = provider.GetService<MyOptionalService>();
+
+// Resolve all implementations
+IEnumerable<IMyService> all = provider.GetServices<IMyService>();
 ```
 
 3. Create Instances with `ActivatorUtilities`:
@@ -80,7 +95,7 @@ var instance = ActivatorUtilities.CreateInstance(provider, typeof(MyType), someE
 var typed = ActivatorUtilities.CreateInstance<MyType>(provider, someExplicitArg);
 
 // Get service or create instance if not registered
-var maybe = ActivatorUtilities.GetServiceOrCreateInstance(provider, typeof(MyOtherType));
+var maybeInstance = ActivatorUtilities.GetServiceOrCreateInstance(provider, typeof(MyOtherType));
 ```
 
 ## API Details
@@ -99,11 +114,14 @@ Common factory methods and constructors are shown in the table below.
 | `Transient<TService>(Func<IServiceProvider, TService> factory)` | Register a transient using a generic factory. | `var d = ServiceDescriptor.Transient(sp => new MyService());` |
 | `Transient(Type service, Type implementationType)` | Non-generic transient overload. | `var d = ServiceDescriptor.Transient(typeof(IMyService), typeof(MyService));` |
 | `Transient(Type service, Func<IServiceProvider, object> implementationFactory)` | Non-generic transient using a factory. | `var d = ServiceDescriptor.Transient(typeof(IMyService), sp => new MyService());` |
+| `Scoped<TService, TImplementation>()` | Register `TImplementation` as a scoped implementation for `TService`. | `var d = ServiceDescriptor.Scoped<IMyService, MyService>();` |
+| `Scoped(Type service, Type implementationType)` | Non-generic scoped overload. | `var d = ServiceDescriptor.Scoped(typeof(IMyService), typeof(MyService));` |
+| `Scoped<TService>(Func<IServiceProvider, TService> factory)` | Register a scoped service with a factory. | `var d = ServiceDescriptor.Scoped(sp => new MyService());` |
 | `Singleton<TService, TImplementation>()` | Register `TImplementation` as a singleton implementation for `TService`. | `var d = ServiceDescriptor.Singleton<IMyService, MyService>();` |
 | `Singleton(Type service, Type implementationType)` | Non-generic singleton overload. | `var d = ServiceDescriptor.Singleton(typeof(IMyService), typeof(MyService));` |
 | `Singleton(Type service, object instance)` | Register an existing instance as a singleton. | `var d = ServiceDescriptor.Singleton(typeof(IMyService), instance);` |
 | `Singleton<TService>(Func<IServiceProvider, TService> factory)` | Register a singleton with a factory. | `var d = ServiceDescriptor.Singleton(sp => new MyService());` |
-| `Describe(Type serviceType, Func<IServiceProvider, object> factory, ServiceLifetime lifetime)` | Create a descriptor with a factory and explicit lifetime. | `var d = ServiceDescriptor.Describe(typeof(IMyService), sp => new MyService(), ServiceLifetime.Singleton);` |
+| `Describe(Type serviceType, Func<IServiceProvider, object> factory, ServiceLifetime lifetime)` | Create a descriptor with a factory and explicit lifetime (including `Scoped`). | `var d = ServiceDescriptor.Describe(typeof(IMyService), sp => new MyService(), ServiceLifetime.Scoped);` |
 
 `ServiceDescriptor` also exposes `GetImplementationType()` which is useful to determine the concrete implementation type for a descriptor when inspecting or composing descriptors.
 
@@ -117,11 +135,13 @@ Common collection operations and helpers are shown in the table below.
 
 | Operation | Description | Example |
 |---|---|---|
-| `Add(ServiceDescriptor)` | Append a descriptor unconditionally. | `services.Add(ServiceDescriptor.Transient<IMyService, MyService>());` |
+| `Add(ServiceDescriptor)` | Append a descriptor unconditionally using the provided extension method. | `services.Add(ServiceDescriptor.Transient<IMyService, MyService>());` |
 | `Add(IEnumerable<ServiceDescriptor>)` | Append multiple descriptors unconditionally. | `services.Add(new[] { d1, d2 });` |
 | `TryAdd(ServiceDescriptor)` | Add a descriptor only if the service type is not already present. | `services.TryAdd(ServiceDescriptor.Singleton<IMyService, MyService>());` |
 | `TryAdd(IEnumerable<ServiceDescriptor>)` | Try to add multiple descriptors, skipping those whose service type already exists. | `services.TryAdd(new[] { d1, d2 });` |
 | `TryAddTransient(Type service, Type impl)` | Add a transient registration only if the service type is not already registered. | `services.TryAddTransient(typeof(IMyService), typeof(MyService));` |
+| `TryAddScoped(Type service, Type impl)` | Add a scoped registration only if the service type is not already registered. | `services.TryAddScoped(typeof(IMyService), typeof(MyService));` |
+| `TryAddSingleton(Type service, Type impl)` | Add a singleton registration only if the service type is not already registered. | `services.TryAddSingleton(typeof(IMyService), typeof(MyService));` |
 | `Replace(ServiceDescriptor descriptor)` | Remove the first descriptor with a matching `ServiceType` and add the supplied descriptor. | `services.Replace(ServiceDescriptor.Singleton(typeof(IMyService), new MyService()));` |
 | `RemoveAll(Type serviceType)` | Remove every descriptor for the specified service type. | `services.RemoveAll(typeof(IMyService));` |
 
@@ -137,18 +157,14 @@ This static class contains convenience helpers for common registration patterns.
 
 | Helper | Description | Example |
 |---|---|---|
-| `AddTransient(this IServiceCollection, Type service, Type implementationType)` | Add a transient registration with specified implementation type. | `services.AddTransient(typeof(IMyService), typeof(MyService));` |
-| `AddTransient(this IServiceCollection, Type service, Func<IServiceProvider, object> implementationFactory)` | Add a transient registration using a factory. | `services.AddTransient(typeof(IMyService), sp => new MyService());` |
-| `AddTransient<TService, TImplementation>()` | Generic form to add a transient mapping. | `services.AddTransient<IMyService, MyService>();` |
-| `AddTransient<TService>(Func<IServiceProvider, TService> implementationFactory)` | Generic transient using a factory. | `services.AddTransient(sp => new MyService());` |
+| `AddTransient(this IServiceCollection, Type service, Type implementationType)` | Add a transient registration with specified implementation type. | `services.Add(ServiceDescriptor.Transient(typeof(IMyService), typeof(MyService)));` |
+| `AddTransient(this IServiceCollection, Type service, Func<IServiceProvider, object> implementationFactory)` | Add a transient registration using a factory. | `services.Add(ServiceDescriptor.Transient(typeof(IMyService), sp => new MyService()));` |
 | `TryAddTransient<TService, TImplementation>()` | Register a transient mapping with generic types if not already registered. | `services.TryAddTransient<IMyService, MyService>();` |
 | `TryAddTransient<TService>(Func<IServiceProvider, TService> implementationFactory)` | Register a transient with a factory. | `services.TryAddTransient(sp => new MyService());` |
 | `TryAddTransient(this IServiceCollection, Type service, Func<IServiceProvider, object> implementationFactory)` | Non-generic transient factory overload. | `services.TryAddTransient(typeof(IMyService), sp => new MyService());` |
-| `AddSingleton(this IServiceCollection, Type serviceType, Type implementationType)` | Add a singleton registration with specified implementation type. | `services.AddSingleton(typeof(IMyService), typeof(MyService));` |
-| `AddSingleton(this IServiceCollection, Type serviceType, Func<IServiceProvider, object> implementationFactory)` | Add a singleton registration using a factory. | `services.AddSingleton(typeof(IMyService), sp => new MyService());` |
-| `AddSingleton<TService, TImplementation>()` | Generic form to add a singleton mapping. | `services.AddSingleton<IMyService, MyService>();` |
-| `AddSingleton(this IServiceCollection, Type serviceType, object implementationInstance)` | Register an existing instance as a singleton. | `services.AddSingleton(typeof(IMyService), instance);` |
-| `AddSingleton<TService>(TService implementationInstance)` | Generic instance singleton registration. | `services.AddSingleton<IMyService>(instance);` |
+| `TryAddScoped<TService, TImplementation>()` | Register a scoped mapping with generic types if not already registered. | `services.TryAddScoped<IMyService, MyService>();` |
+| `TryAddScoped<TService>(Func<IServiceProvider, TService> implementationFactory)` | Register a scoped service using a factory if not already registered. | `services.TryAddScoped(sp => new MyService());` |
+| `TryAddScoped(this IServiceCollection, Type service, Func<IServiceProvider, object> implementationFactory)` | Non-generic scoped factory overload. | `services.TryAddScoped(typeof(IMyService), sp => new MyService());` |
 | `TryAddSingleton<TService, TImplementation>()` | Register a singleton mapping with generic types if not already registered. | `services.TryAddSingleton<IMyService, MyService>();` |
 | `TryAddSingleton<TService>(TService instance)` | Register an existing instance as a singleton if not already registered. | `services.TryAddSingleton<IMyService>(instance);` |
 | `TryAddSingleton<TService>(Func<IServiceProvider, TService> implementationFactory)` | Register a singleton using a factory. | `services.TryAddSingleton(sp => new MyService());` |
@@ -216,12 +232,14 @@ This will create `ServiceDescriptor` instances based on the attributes and add t
 
 ### Service Provider Extension Helpers
 
-The project includes a small set of `IServiceProvider` extension helpers in `ServiceProviderExtensions` to make consuming services easier.
+The project includes a small set of `IServiceProvider` extension helpers in `ServiceProviderServiceExtensions` to make consuming services easier.
 
 | Helper | Description | Example |
 |---|---|---|
 | `CreateInstance(this IServiceProvider provider, Type serviceType, params object[] args)` | Wrapper around `ActivatorUtilities.CreateInstance`. | `var obj = provider.CreateInstance(typeof(MyType), someArg);` |
 | `CreateInstance<T>(this IServiceProvider provider, params object[] args)` | Generic wrapper around `CreateInstance`. | `var obj = provider.CreateInstance<MyType>(someArg);` |
 | `Resolve<T>(this IServiceProvider provider)` | Alias for `GetRequiredService<T>()`. | `var s = provider.Resolve<MyService>();` |
-| `GetRequiredService<T>(this IServiceProvider provider)` | Attempt to get a service and throw `KeyNotFoundException` if not present. | `var s = provider.GetRequiredService<MyService>();` |
-| `GetServices<T>(this IServiceProvider provider)` | Attempt to resolve `IEnumerable<T>` and return an empty collection when none are registered. | `var all = provider.GetServices<IMyService>();` |
+| `GetRequiredService<T>(this IServiceProvider provider)` | Attempt to get a service and throw `InvalidOperationException` if not present. | `var s = provider.GetRequiredService<MyService>();` |
+| `GetServices<T>(this IServiceProvider provider)` | Attempt to resolve `IEnumerable<T>`; throws if none are registered (consistent with `GetRequiredService`). | `var all = provider.GetServices<IMyService>();` |
+| `GetServices(this IServiceProvider provider, Type serviceType)` | Resolve an `IEnumerable<serviceType>` and return it as `IEnumerable<object?>`. | `var all = provider.GetServices(typeof(IMyService));` |
+| `CreateScope(this IServiceProvider provider)` | Create a new `IServiceScope` from an `IServiceScopeFactory` resolved from the provider. | `using var scope = provider.CreateScope();` |
