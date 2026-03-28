@@ -2,8 +2,6 @@
 
 This is a minimal implementation of the `Microsoft.Extensions.DependencyInjection` package, including the `ActivatorUtilities` class.
 
-Allows for Singleton and Transient services to be registered with an IOC container. Scoped services have not been implemented.
-
 This is designed as a very lightweight, and minimalistic, solution, but this may come at a cost. This package does not include many of the safety measures and fallbacks that the full package contains. It was written from the ground up, other than the `ActivatorUtilities` class. Therefore, it might not play well with third-party IOC wrappers like AutoFac or CastleWindsor. It should not be seen as a replacement for `Microsoft.Extensions.DependencyInjection`.
 
 The original purpose of this package was to act as an IOC container for game mods, where a full enterprise level package simply comes with too much bloat. This is ideal for those kinds of scenarios, when you just need a quick and simple IOC container, without all the bloat.
@@ -40,7 +38,6 @@ This project is intentionally small and dependency-light. It aims to provide the
 
 ## Important Notes and Limitations
 
-- Scoped services are not implemented.
 - This implementation does not include all the diagnostics, fallback behaviour or extension points present in the official Microsoft DI.
 - Behaviour may differ from the official DI in edge cases - test carefully before replacing the official DI in production systems.
 - There is no guarantee of compatibility with third-party IOC containers or wrappers.
