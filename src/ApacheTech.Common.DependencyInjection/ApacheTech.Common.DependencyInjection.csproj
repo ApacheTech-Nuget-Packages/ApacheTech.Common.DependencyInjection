@@ -1,13 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.3.1.0</Version>
+		<Version>2.4.0.0</Version>
 		<Nullable>enable</Nullable>
 		<PackageReleaseNotes>
-			ApacheTech.Common.DependencyInjection v2.3.1
+			ApacheTech.Common.DependencyInjection v2.4.0
 
-			Added: Per Assembly disposal of services.
-			Build: Updated to .NET 8.0 SDK.
+			Added: Scoped Services
 
 		</PackageReleaseNotes>
 
@@ -63,9 +62,13 @@
 		</PackageReference>
 	</ItemGroup>
 
-	<ItemGroup>
+	<ItemGroup Condition=" '$(Configuration)' != 'Debug' ">
 		<PackageReference Include="ApacheTech.Common.Extensions" Version="2.1.1" />
 		<PackageReference Include="ApacheTech.Common.DependencyInjection.Abstractions" Version="2.3.0" />
+	</ItemGroup>
+	<ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+		<ProjectReference Include="..\ApacheTech.Common.DependencyInjection.Abstractions\ApacheTech.Common.DependencyInjection.Abstractions.csproj" />
+		<ProjectReference Include="..\..\..\ApacheTech.Common.Extensions\src\ApacheTech.Common.Extensions.csproj" />
 	</ItemGroup>
 
 </Project>

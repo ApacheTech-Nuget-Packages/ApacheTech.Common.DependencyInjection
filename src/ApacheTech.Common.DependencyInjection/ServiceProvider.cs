@@ -1,9 +1,10 @@
 ﻿#nullable enable
 
+using ApacheTech.Common.DependencyInjection.Abstractions;
+using ApacheTech.Common.Extensions.DotNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ApacheTech.Common.DependencyInjection.Abstractions;
 
 namespace ApacheTech.Common.DependencyInjection;
 
@@ -26,21 +27,15 @@ public sealed class ServiceProvider(IEnumerable<ServiceDescriptor> services, Ser
     /// </returns>
     public object? GetService(Type serviceType)
     {
-        // Check for explicitly registered IEnumerable<T>
-        var descriptor = _serviceDescriptors.SingleOrDefault(p => p.ServiceType == serviceType);
-        if (descriptor is not null)
-        {
-            return ResolveDescriptor(descriptor);
-        }
+        var context = new ResolutionContext();
 
-        // Handle IEnumerable<T> when no explicit registration exists
         if (serviceType.IsGenericType && serviceType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
         {
             var itemType = serviceType.GetGenericArguments()[0];
-            return ResolveEnumerable(itemType);
+            return ResolveEnumerable(itemType, null, null, context);
         }
 
-        return null;
+        return ResolveType(serviceType, null, null, context);
     }
 
     /// <summary>
@@ -51,64 +46,116 @@ public sealed class ServiceProvider(IEnumerable<ServiceDescriptor> services, Ser
         if (!_options.DisposeImplementations) return;
 
         var assemblies = _options.DisposableAssemblies;
-        var filterByAssembly = assemblies is not null && assemblies.Any();
+        var filterByAssembly = assemblies is not null && assemblies.Count != 0;
         var descriptors = _serviceDescriptors.Where(d =>
             d.Lifetime == ServiceLifetime.Singleton &&
-            d.Implementation is IDisposable or IAsyncDisposable &&
-            (!filterByAssembly || assemblies!.Contains(d.Implementation.GetType().Assembly)));
+            d.ImplementationInstance is IDisposable or IAsyncDisposable &&
+            (!filterByAssembly || assemblies!.Contains(d.ImplementationInstance.GetType().Assembly)));
 
         foreach (var descriptor in descriptors)
         {
-            switch (descriptor.Implementation!)
+            switch (descriptor.ImplementationInstance!)
             {
                 case IDisposable disposable:
                     disposable.Dispose();
                     break;
                 case IAsyncDisposable asyncDisposable:
-                    asyncDisposable.DisposeAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                    asyncDisposable.DisposeAsync().RunOnce();
                     break;
             }
         }
     }
 
-    private object? ResolveDescriptor(ServiceDescriptor descriptor)
+    /// <summary>
+    ///     Creates a new scope for resolving scoped services. Scoped services are disposed when the scope is disposed.
+    /// </summary>
+    /// <returns>A new <see cref="IServiceScope"/>.</returns>
+    public IServiceScope CreateScope() => new ServiceScope(this);
+
+    internal object? ResolveType(Type serviceType, ServiceScope? scope, ServiceLifetime? rootLifetime, ResolutionContext context)
     {
-        if (descriptor.Implementation is not null)
+        var descriptor = _serviceDescriptors.SingleOrDefault(p => p.ServiceType == serviceType)
+            ?? throw new InvalidOperationException($"Service of type {serviceType.FullName} is not registered.");
+
+        if (descriptor.Lifetime is ServiceLifetime.Singleton && descriptor.ImplementationInstance is not null)
+            return descriptor.ImplementationInstance;
+
+        context.Enter(serviceType);
+        var effectiveRootLifetime = rootLifetime ?? descriptor.Lifetime;
+
+        try
         {
-            return descriptor.Implementation;
-        }
+            // Handle scoped
+            if (descriptor.Lifetime is ServiceLifetime.Scoped)
+            {
+                if (effectiveRootLifetime is ServiceLifetime.Singleton && _options.ValidateScopes)
+                {
+                    throw new InvalidOperationException(
+                        $"Cannot consume scoped service '{serviceType.FullName}' from singleton '{effectiveRootLifetime}'.");
+                }
 
-        if (descriptor.ImplementationFactory is not null)
+                if (scope is null)
+                {
+                    if (_options.ValidateScopes)
+                        throw new InvalidOperationException(
+                            $"Cannot resolve scoped service '{serviceType.FullName}' from root provider.");
+
+                    return CreateInstance(descriptor, null, effectiveRootLifetime, context);
+                }
+
+                if (scope.TryGet(descriptor, out var existing))
+                    return existing;
+
+                var instance = CreateInstance(descriptor, scope, effectiveRootLifetime, context);
+                scope.Set(descriptor, instance);
+
+                return instance;
+            }
+
+            // Handle singleton
+            if (descriptor.Lifetime is ServiceLifetime.Singleton)
+            {
+                if (descriptor.ImplementationInstance is not null)
+                    return descriptor.ImplementationInstance;
+
+                var instance = CreateInstance(descriptor, scope, effectiveRootLifetime, context);
+                descriptor.ImplementationInstance = instance;
+
+                return instance;
+            }
+
+            // Transient
+            return CreateInstance(descriptor, scope, effectiveRootLifetime, context);
+        }
+        finally
         {
-            return CacheService(descriptor, descriptor.ImplementationFactory(this));
+            context.Exit(serviceType);
         }
-
-        var implementationType = descriptor.ImplementationType ?? descriptor.ServiceType;
-
-        if (implementationType.IsInterface)
-        {
-            throw new TypeLoadException($"Cannot instantiate interface: {implementationType.FullName}");
-        }
-
-        if (implementationType.IsAbstract)
-        {
-            throw new TypeLoadException($"Cannot instantiate abstract class: {implementationType.FullName}");
-        }
-
-        var implementation = ActivatorUtilities.CreateInstance(this, implementationType);
-        return CacheService(descriptor, implementation);
     }
 
-    private object ResolveEnumerable(Type itemType)
+    private Array ResolveEnumerable(Type itemType, ServiceScope? scope, ServiceLifetime? rootLifetime, ResolutionContext context)
     {
+        if (scope is null && _options.ValidateScopes)
+        {
+            var hasScoped = _serviceDescriptors.Any(d =>
+                d.ServiceType == itemType &&
+                d.Lifetime is ServiceLifetime.Scoped);
+
+            if (hasScoped)
+            {
+                throw new InvalidOperationException(
+                    $"Cannot resolve IEnumerable<{itemType.Name}> from root provider because it contains scoped services.");
+            }
+        }
+
         var implementations = _serviceDescriptors
             .Where(d => d.ServiceType == itemType)
-            .Select(ResolveDescriptor)
-            .Where(instance => instance != null)
+            .Select(d => ResolveDescriptorDirect(d, scope, rootLifetime, context))
             .ToList();
 
         var array = Array.CreateInstance(itemType, implementations.Count);
-        for (int i = 0; i < implementations.Count; i++)
+
+        for (var i = 0; i < implementations.Count; i++)
         {
             array.SetValue(implementations[i], i);
         }
@@ -116,13 +163,62 @@ public sealed class ServiceProvider(IEnumerable<ServiceDescriptor> services, Ser
         return array;
     }
 
-    private static object CacheService(ServiceDescriptor descriptor, object implementation)
+    private object? ResolveDescriptorDirect(ServiceDescriptor descriptor, ServiceScope? scope, ServiceLifetime? rootLifetime, ResolutionContext context)
     {
-        if (descriptor.Lifetime == ServiceLifetime.Singleton)
+        var effectiveRootLifetime = rootLifetime ?? descriptor.Lifetime;
+
+        if (descriptor.Lifetime is ServiceLifetime.Scoped)
         {
-            descriptor.Implementation = implementation;
+            if (effectiveRootLifetime is ServiceLifetime.Singleton && _options.ValidateScopes)
+            {
+                throw new InvalidOperationException(
+                    $"Cannot consume scoped service '{descriptor.ServiceType.FullName}' from singleton.");
+            }
+
+            if (scope is null)
+                throw new InvalidOperationException("Cannot resolve scoped service without a scope.");
+
+            if (scope.TryGet(descriptor, out var existing))
+                return existing;
+
+            var instance = CreateInstance(descriptor, scope, effectiveRootLifetime, context);
+            scope.Set(descriptor, instance);
+
+            return instance;
         }
-        return implementation;
+
+        if (descriptor.Lifetime is ServiceLifetime.Singleton)
+        {
+            if (descriptor.ImplementationInstance is not null)
+                return descriptor.ImplementationInstance;
+
+            var instance = CreateInstance(descriptor, scope, effectiveRootLifetime, context);
+            descriptor.ImplementationInstance = instance;
+
+            return instance;
+        }
+
+        return CreateInstance(descriptor, scope, effectiveRootLifetime, context);
     }
-    
+
+    private object CreateInstance(ServiceDescriptor descriptor, ServiceScope? scope, ServiceLifetime? rootLifetime, ResolutionContext context)
+    {
+        IServiceProvider provider = scope is null
+            ? new RootServiceProvider(this, rootLifetime, context)
+            : new ScopedServiceProvider(this, scope, rootLifetime, context);
+        if (descriptor.ImplementationFactory is not null)
+        {
+            return descriptor.ImplementationFactory(provider);
+        }
+
+        var implementationType = descriptor.ImplementationType ?? descriptor.ServiceType;
+
+        if (implementationType.IsInterface)
+            throw new TypeLoadException($"Cannot instantiate interface: {implementationType.FullName}");
+
+        if (implementationType.IsAbstract)
+            throw new TypeLoadException($"Cannot instantiate abstract class: {implementationType.FullName}");
+
+        return ActivatorUtilities.CreateInstance(provider, implementationType);
+    }
 }

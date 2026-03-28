@@ -16,11 +16,21 @@ public static class ServiceCollectionBuilderExtensions
     /// <param name="services">The <see cref="IServiceCollection"/> containing service descriptors.</param>
     /// <param name="options"> Configures various service provider behaviours.</param>
     /// <returns>The <see cref="ServiceProvider"/>.</returns>
-
     public static ServiceProvider BuildServiceProvider(this IServiceCollection services, Action<ServiceProviderOptions>? options = null)
     {
         services.ThrowIfNull();
-        options.ThrowIfNull();
+
+        // Default registrations that are always present in the service provider, regardless of whether the user has registered them or not.
+        services.AddSingleton(services); // Register the service collection itself for ease of use in factories and such.
+        services.AddSingleton(sp => sp); // Register the service provider itself for ease of use in factories and such.
+        services.AddSingleton<IServiceScopeFactory, ServiceScopeFactory>(); // Register the scope factory for creating scopes.
+
+        services.AddScoped<IServiceScope>(sp =>
+        {
+            if (sp is ScopedServiceProvider scoped) return scoped.Scope;
+            throw new InvalidOperationException("No active scope.");
+        });
+
         return new ServiceProvider(services, ServiceProviderOptions.Default.With(options));
     }
 }

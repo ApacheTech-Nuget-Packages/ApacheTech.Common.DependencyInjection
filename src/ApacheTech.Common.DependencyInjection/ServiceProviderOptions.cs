@@ -27,4 +27,9 @@ public class ServiceProviderOptions
     ///      is not null, only implementations from the specified assemblies will be disposed.
     /// </summary>
     public List<Assembly>? DisposableAssemblies { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value that indicates whether validation is performed to ensure that scoped services are never resolved from the root provider.
+    /// </summary>
+    public bool ValidateScopes { get; set; }
 }
