@@ -74,7 +74,9 @@ public static class ServiceProviderServiceExtensions
     {
         ArgumentNullException.ThrowIfNull(provider);
         ArgumentNullException.ThrowIfNull(serviceType);
-        return provider.GetRequiredService(serviceType);
+        var service = provider.GetService(serviceType) 
+            ?? throw new InvalidOperationException($"There is no service of type {serviceType}.");
+        return service;
     }
 
     /// <summary>
