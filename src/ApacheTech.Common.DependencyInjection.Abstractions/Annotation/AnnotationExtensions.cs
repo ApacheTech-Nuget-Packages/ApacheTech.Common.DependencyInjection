@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using ApacheTech.Common.DependencyInjection.Abstractions.Extensions;
-using ApacheTech.Common.Extensions.Reflection;
 
 namespace ApacheTech.Common.DependencyInjection.Abstractions.Annotation;
 
@@ -20,7 +19,9 @@ public static class AnnotationExtensions
     public static void AddAnnotatedServicesFromAssembly(this IServiceCollection services, Assembly assembly)
     {
         var descriptors = assembly
-            .GetTypesWithAttribute<ServiceAttribute>()
+            .GetTypes()
+            .Where(type => type.GetCustomAttributes(typeof(ServiceAttribute), false).Length > 0)
+            .Select(p => new { Type = p, Attribute = (ServiceAttribute)p.GetCustomAttribute(typeof(ServiceAttribute), false)! })
             .Select(x => x.Attribute.Describe(x.Type));
 
         services.Add(descriptors);
@@ -35,7 +36,9 @@ public static class AnnotationExtensions
     {
         var descriptors = Assembly
             .GetCallingAssembly()
-            .GetTypesWithAttribute<ServiceAttribute>()
+            .GetTypes()
+            .Where(type => type.GetCustomAttributes(typeof(ServiceAttribute), false).Length > 0)
+            .Select(p => new { Type = p, Attribute = (ServiceAttribute)p.GetCustomAttribute(typeof(ServiceAttribute), false)! })
             .Select(x => x.Attribute.Describe(x.Type));
 
         services.Add(descriptors);
@@ -52,8 +55,10 @@ public static class AnnotationExtensions
         var descriptors = assemblyMarkers
             .Select(marker => marker.Assembly)
             .SelectMany(assembly => assembly
-                .GetTypesWithAttribute<ServiceAttribute>()
-                .Select(t => t.Attribute.Describe(t.Type)));
+            .GetTypes()
+            .Where(type => type.GetCustomAttributes(typeof(ServiceAttribute), false).Length > 0)
+            .Select(p => new { Type = p, Attribute = (ServiceAttribute)p.GetCustomAttribute(typeof(ServiceAttribute), false)! })
+            .Select(t => t.Attribute.Describe(t.Type)));
 
         services.Add(descriptors);
     }

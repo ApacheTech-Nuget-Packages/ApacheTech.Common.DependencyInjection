@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using ApacheTech.Common.DependencyInjection.Abstractions.Annotation;
-using ApacheTech.Common.Extensions.Reflection;
 
 namespace ApacheTech.Common.DependencyInjection.Abstractions;
 
@@ -38,7 +37,7 @@ public static class ActivatorUtilities
             {
                 var matcher = new ConstructorMatcher(constructor);
 
-                var isPreferred = constructor.HasCustomAttribute<ActivatorUtilitiesConstructor>();
+                var isPreferred = constructor.GetCustomAttributes().OfType<ActivatorUtilitiesConstructor>().Any();
                 var length = matcher.Match(parameters);
 
                 if (isPreferred)
@@ -162,7 +161,7 @@ public static class ActivatorUtilities
         {
             var constructorParameter = constructorParameters[i];
             var parameterType = constructorParameter.ParameterType;
-            var hasDefaultValue = constructorParameter.TryGetDefaultValue(out var defaultValue);
+            var hasDefaultValue = TryGetDefaultValue(constructorParameter, out var defaultValue);
 
             if (parameterMap[i] != null)
             {
@@ -170,7 +169,7 @@ public static class ActivatorUtilities
             }
             else
             {
-                var parameterTypeExpression = new [] { serviceProvider,
+                var parameterTypeExpression = new[] { serviceProvider,
                     Expression.Constant(parameterType, typeof(Type)),
                     Expression.Constant(constructor.DeclaringType, typeof(Type)),
                     Expression.Constant(hasDefaultValue) };
@@ -250,8 +249,8 @@ public static class ActivatorUtilities
             {
                 continue;
             }
-            
-            if (!constructor.HasCustomAttribute<ActivatorUtilitiesConstructor>()) continue;
+
+            if (!constructor.GetCustomAttributes().OfType<ActivatorUtilitiesConstructor>().Any()) continue;
             if (seenPreferred)
             {
                 ThrowMultipleConstructorsMarkedWithAttributeException();
@@ -310,7 +309,7 @@ public static class ActivatorUtilities
     {
         private readonly ConstructorInfo _constructor;
         private readonly ParameterInfo[] _parameters;
-        private readonly object[] _parameterValues;
+        private readonly object?[] _parameterValues;
         private readonly bool[] _parameterValuesSet;
 
         public ConstructorMatcher(ConstructorInfo constructor)
@@ -366,7 +365,7 @@ public static class ActivatorUtilities
                     var value = provider.GetService(_parameters[index].ParameterType);
                     if (value == null)
                     {
-                        if (!_parameters[index].TryGetDefaultValue(out var defaultValue))
+                        if (!TryGetDefaultValue(_parameters[index], out var defaultValue))
                         {
                             throw new InvalidOperationException($"Unable to resolve service for type '{_parameters[index].ParameterType}' while attempting to activate '{_constructor.DeclaringType}'.");
                         }
@@ -404,5 +403,44 @@ public static class ActivatorUtilities
     private static void ThrowMarkedCtorDoesNotTakeAllProvidedArguments()
     {
         throw new InvalidOperationException("Constructor marked with a service-based constructor attribute does not accept all given argument types.");
+    }
+
+    private static bool TryGetDefaultValue(ParameterInfo parameter, out object? defaultValue)
+    {
+        bool hasDefaultValue;
+        var tryToGetDefaultValue = true;
+        object? value = default;
+
+        try
+        {
+            hasDefaultValue = parameter.HasDefaultValue;
+        }
+        catch (FormatException) when (parameter.ParameterType == typeof(DateTime))
+        {
+            // Workaround for https://github.com/dotnet/corefx/issues/12338
+            // If HasDefaultValue throws FormatException for DateTime
+            // we expect it to have default value
+            hasDefaultValue = true;
+            tryToGetDefaultValue = false;
+        }
+
+        if (!hasDefaultValue) goto Return;
+
+        if (tryToGetDefaultValue)
+        {
+            value = parameter.DefaultValue!;
+        }
+
+        // Workaround for https://github.com/dotnet/corefx/issues/11797
+        if (value is null && parameter.ParameterType.IsValueType)
+        {
+            var obj = Activator.CreateInstance(parameter.ParameterType);
+            if (obj is not null)
+                value = obj;
+        }
+
+    Return:
+        defaultValue = value!;
+        return value is not null;
     }
 }

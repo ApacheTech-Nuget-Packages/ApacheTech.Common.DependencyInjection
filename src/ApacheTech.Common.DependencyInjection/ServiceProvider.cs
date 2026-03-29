@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
 using ApacheTech.Common.DependencyInjection.Abstractions;
-using ApacheTech.Common.DependencyInjection.Abstractions.Extensions;
-using ApacheTech.Common.Extensions.DotNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,7 +69,7 @@ public sealed class ServiceProvider(IEnumerable<ServiceDescriptor> services, Ser
                     disposable.Dispose();
                     break;
                 case IAsyncDisposable asyncDisposable:
-                    asyncDisposable.DisposeAsync().RunOnce();
+                    asyncDisposable.DisposeAsync().AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
                     break;
             }
         }
