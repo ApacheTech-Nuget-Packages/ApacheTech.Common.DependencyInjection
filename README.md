@@ -16,7 +16,7 @@ https://www.youtube.com/watch?v=NSVZa4JuTl8
 
 ## Overview
 
-This repository provides a compact, focused implementation of dependency injection primitives suitable for small applications, tools and game mods where the official Microsoft dependency injection package would be overly heavy.
+This repository provides a compact, focused implementation of dependency injection primitives suitable for small applications, tools and game mods where the official Microsoft dependency injection package would be overly heavy. It targets .NET 8 and uses modern C# features while keeping the public API surface familiar to users of `Microsoft.Extensions.DependencyInjection`.
 
 Key components include:
 
@@ -28,7 +28,7 @@ Key components include:
 - `ServiceCollectionDescriptorExtensions` - extension helpers for adding, trying to add and replacing descriptors (e.g. `TryAddTransient`, `TryAddSingleton`).
 - `ServiceProviderServiceExtensions` - helpers to resolve services from an `IServiceProvider` (`GetRequiredService`, `GetServices`, `CreateInstance`, `CreateScope`).
 
-This project is intentionally small and dependency-light. It aims to provide the core features most commonly needed for composition and injection without the additional complexity of the full Microsoft implementation.
+This project is intentionally small and dependency-light. It focuses purely on dependency injection primitives (service collection, descriptors, provider utilities) without hosting, configuration, or logging infrastructure. It aims to provide the core features most commonly needed for composition and injection without the additional complexity of the full Microsoft implementation.
 
 ## Features
 
@@ -44,7 +44,7 @@ This project is intentionally small and dependency-light. It aims to provide the
 - This implementation does not include all the diagnostics, fallback behaviour or extension points present in the official Microsoft DI.
 - Behaviour may differ from the official DI in edge cases - test carefully before replacing the official DI in production systems.
 - There is no guarantee of compatibility with third-party IOC containers or wrappers.
-- `ServiceCollection` only exposes `Add` via the `ICollection<ServiceDescriptor>` interface; most code should use the provided extension methods (`Add`, `TryAdd`, `TryAddTransient`, `TryAddSingleton`, etc.) instead of manipulating the underlying list directly.
+- `ServiceCollection` only exposes `Add` via the `ICollection<ServiceDescriptor>` interface; most code should use the provided extension methods (`Add`, `TryAdd`, `TryAddTransient`, `TryAddScoped`, `TryAddSingleton`, keyed variants, etc.) instead of manipulating the underlying list directly.
 
 ## Quick Start
 
@@ -227,6 +227,67 @@ services.AddAnnotatedServicesFromAssembly(typeof(MyService));
 ```
 
 This will create `ServiceDescriptor` instances based on the attributes and add them to the collection.
+
+---
+
+### Keyed Services
+
+In addition to standard (unkeyed) registrations, the library supports **keyed services**. A keyed service is a registration where the same service type can have multiple implementations distinguished by an arbitrary key (for example a string name, enum, or other value).
+
+Keyed services are built around `IKeyedServiceProvider`, which extends `IServiceProvider` with:
+
+- `object? GetService(Type serviceType, object? serviceKey = null)`
+
+The default service provider implementation created by this library implements `IKeyedServiceProvider`, so you can both:
+
+- Resolve unkeyed services via the usual `IServiceProvider` APIs.
+- Resolve keyed services via `GetService(type, key)` or the typed helpers `GetKeyedService<T>(key)`.
+
+#### Registering keyed services
+
+Keyed registrations mirror the standard `Add*` helpers, with an additional `serviceKey` parameter:
+
+- `AddKeyedTransient<TService, TImplementation>(object serviceKey)`
+- `AddKeyedScoped<TService, TImplementation>(object serviceKey)`
+- `AddKeyedSingleton<TService, TImplementation>(object serviceKey)`
+- Non-generic overloads that accept `Type serviceType`, `Type implementationType` and/or factories.
+
+Example:
+
+```csharp
+var services = new ServiceCollection();
+
+// Two different implementations of the same service type, distinguished by key
+services.AddKeyedTransient<IMyService, MyServiceA>("a");
+services.AddKeyedTransient<IMyService, MyServiceB>("b");
+
+// Keyed singletons cached per key
+services.AddKeyedSingleton<IMyService, MyServiceA>("primary");
+services.AddKeyedSingleton<IMyService, MyServiceA>("secondary");
+```
+
+#### Resolving keyed services
+
+Once registered, you can resolve keyed services either by using `IKeyedServiceProvider` directly or the typed helpers exposed by this library:
+
+```csharp
+var provider = services.BuildServiceProvider();
+
+// Using the extended GetService(Type, object) API
+var a = ((IKeyedServiceProvider)provider).GetService(typeof(IMyService), "a");
+
+// Or with typed helpers (from the extensions package)
+var primary = provider.GetKeyedService<IMyService>("primary");
+var secondary = provider.GetKeyedService<IMyService>("secondary");
+```
+
+Keyed and unkeyed services are kept logically separate:
+
+- Unkeyed resolution (`GetService(typeof(IMyService))`, `GetRequiredService<IMyService>()`, `GetServices<IMyService>()`) **does not** see keyed registrations.
+- Keyed resolution only returns services matching the requested key.
+- `IEnumerable<T>` resolved via unkeyed APIs only contains unkeyed registrations; keyed collections may be resolved with `GetKeyedService<IEnumerable<T>>(key)`.
+
+This separation makes it straightforward to mix standard and keyed registrations without accidental cross-talk.
 
 ---
 
