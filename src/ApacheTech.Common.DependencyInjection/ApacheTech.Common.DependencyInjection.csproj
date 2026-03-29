@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.5.0.0</Version>
+		<Version>2.5.1.0</Version>
 		<Nullable>enable</Nullable>
 		<PackageReleaseNotes>
-			ApacheTech.Common.DependencyInjection v2.5.0
+			ApacheTech.Common.DependencyInjection v2.5.1 (Parity Update)
 
-			Added: Keyed Services
-
+			Added: TryAddScoped extension methods with overloads.
+			Fixed: TryAdd methods now return the service collection, allowing for chaining.
 		</PackageReleaseNotes>
 
 		<ApplicationIcon>__Icon.ico</ApplicationIcon>
@@ -63,7 +63,7 @@
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(Configuration)' != 'Debug' ">
-		<PackageReference Include="ApacheTech.Common.DependencyInjection.Abstractions" Version="2.5.0" />
+		<PackageReference Include="ApacheTech.Common.DependencyInjection.Abstractions" Version="2.5.1" />
 	</ItemGroup>
 	<ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
 		<ProjectReference Include="..\ApacheTech.Common.DependencyInjection.Abstractions\ApacheTech.Common.DependencyInjection.Abstractions.csproj" />
