@@ -56,18 +56,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="README.md">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
-		<None Include="LICENCE.md">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
-		<None Include="__PreviewImage.png">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
+		<None Include="..\..\README.md" Pack="true" PackagePath="" />
+		<None Include="..\..\LICENCE.md" Pack="true" PackagePath="" />
+		<None Include="__PreviewImage.png" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<InternalsVisibleTo Include="ApacheTech.Common.DependencyInjection" />
 	</ItemGroup>
 
