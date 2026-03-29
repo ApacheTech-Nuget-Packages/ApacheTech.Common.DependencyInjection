@@ -51,6 +51,93 @@ public static class ServiceProviderServiceExtensions
     }
 
     /// <summary>
+    ///     Get service of type <typeparamref name="T"/> from the <see cref="IServiceProvider"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of service object to get.</typeparam>
+    /// <param name="provider">The <see cref="IServiceProvider"/> to retrieve the service object from.</param>
+    /// <param name="serviceKey">The key associated with the service object to get.</param>
+    /// <returns>A service object of type <typeparamref name="T"/> or null if there is no such service.</returns>
+    public static T? GetKeyedService<T>(this IServiceProvider provider, object serviceKey)
+    {
+        ArgumentNullException.ThrowIfNull(provider);
+        ArgumentNullException.ThrowIfNull(serviceKey);
+
+        if (provider is not IKeyedServiceProvider keyedProvider)
+        {
+            throw new InvalidOperationException($"The service provider does not implement {nameof(IKeyedServiceProvider)}.");
+        }
+
+        return (T?)keyedProvider.GetService(typeof(T), serviceKey);
+    }
+
+    /// <summary>
+    ///     Gets a service of the specified type associated with the given key from the <see cref="IKeyedServiceProvider"/>.
+    /// </summary>
+    /// <param name="provider">The <see cref="IKeyedServiceProvider"/> to retrieve the service from.</param>
+    /// <param name="serviceType">The type of service object to get.</param>
+    /// <param name="serviceKey">The key associated with the service object to get.</param>
+    /// <returns>
+    ///     A service object of type <paramref name="serviceType"/> if found; otherwise, <see langword="null"/>.
+    /// </returns>
+    public static object GetRequiredKeyedService(this IServiceProvider provider, Type serviceType, object serviceKey)
+    {
+        ArgumentNullException.ThrowIfNull(provider);
+        ArgumentNullException.ThrowIfNull(serviceType);
+        ArgumentNullException.ThrowIfNull(serviceKey);
+
+        if (provider is not IKeyedServiceProvider keyedProvider)
+        {
+            throw new InvalidOperationException($"The service provider does not implement {nameof(IKeyedServiceProvider)}.");
+        }
+
+        return keyedProvider.GetService(serviceType, serviceKey)
+            ?? throw new InvalidOperationException(
+                $"Service of type {serviceType.FullName} with key '{serviceKey}' is not registered.");
+    }
+
+    /// <summary>
+    ///     Gets a service of type <typeparamref name="T"/> associated with the given key from the <see cref="IKeyedServiceProvider"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of service object to get.</typeparam>
+    /// <param name="provider">The <see cref="IKeyedServiceProvider"/> to retrieve the service from.</param>
+    /// <param name="serviceKey">The key associated with the service object to get.</param>
+    /// <returns>
+    ///     A service object of type <typeparamref name="T"/> if found; otherwise, throws an exception.
+    /// </returns>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown when no service of type <typeparamref name="T"/> with the specified key is registered.
+    /// </exception>
+    public static T GetRequiredKeyedService<T>(this IServiceProvider provider, object serviceKey)
+    {
+        ArgumentNullException.ThrowIfNull(provider);
+        ArgumentNullException.ThrowIfNull(serviceKey);
+
+        return (T)provider.GetRequiredKeyedService(typeof(T), serviceKey);
+    }
+
+    /// <summary>
+    ///     Gets all services of type <typeparamref name="T"/> associated with the given key from the <see cref="IKeyedServiceProvider"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of service objects to get.</typeparam>
+    /// <param name="provider">The <see cref="IKeyedServiceProvider"/> to retrieve the services from.</param>
+    /// <param name="serviceKey">The key associated with the service objects to get.</param>
+    /// <returns>
+    ///     An <see cref="IEnumerable{T}"/> containing all matching services; otherwise, an empty collection if none are found.
+    /// </returns>
+    public static IEnumerable<T> GetKeyedServices<T>(this IServiceProvider provider, object serviceKey)
+    {
+        ArgumentNullException.ThrowIfNull(provider);
+        ArgumentNullException.ThrowIfNull(serviceKey);
+
+        if (provider is not IKeyedServiceProvider keyedProvider)
+        {
+            throw new InvalidOperationException($"The service provider does not implement {nameof(IKeyedServiceProvider)}.");
+        }
+
+        return (IEnumerable<T>)(keyedProvider.GetService(typeof(IEnumerable<T>), serviceKey) ?? Array.Empty<T>());
+    }
+
+    /// <summary>
     ///     Gets the service object of the specified type.
     /// </summary>
     /// <param name="serviceProvider">And object that provides access to the service collection.</param>

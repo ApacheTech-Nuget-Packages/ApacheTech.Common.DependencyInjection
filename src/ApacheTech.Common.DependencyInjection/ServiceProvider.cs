@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using ApacheTech.Common.DependencyInjection.Abstractions;
+using ApacheTech.Common.DependencyInjection.Abstractions.Extensions;
 using ApacheTech.Common.Extensions.DotNet;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace ApacheTech.Common.DependencyInjection;
 /// </summary>
 /// <param name="services">The <see cref="IServiceCollection"/> containing service descriptors.</param>
 /// <param name="options"> Configures various service provider behaviours.</param>
-public sealed class ServiceProvider(IEnumerable<ServiceDescriptor> services, ServiceProviderOptions options) : IServiceProvider, IDisposable
+public sealed class ServiceProvider(IEnumerable<ServiceDescriptor> services, ServiceProviderOptions options) : IKeyedServiceProvider, IDisposable
 {
     private readonly IEnumerable<ServiceDescriptor> _serviceDescriptors = services;
     private readonly ServiceProviderOptions _options = options;
@@ -25,17 +26,27 @@ public sealed class ServiceProvider(IEnumerable<ServiceDescriptor> services, Ser
     /// <returns>
     ///     A service object of type <paramref name="serviceType">serviceType</paramref>.   -or-  null if there is no service object of type <paramref name="serviceType">serviceType</paramref>.
     /// </returns>
-    public object? GetService(Type serviceType)
+    public object? GetService(Type serviceType) => GetService(serviceType, null);
+
+    /// <summary>
+    ///     Gets the service object of the specified type.
+    /// </summary>
+    /// <param name="serviceType">An object that specifies the type of service object to get.</param>
+    /// <param name="serviceKey">The key associated with the service object to get.</param>
+    /// <returns>
+    ///     A service object of type <paramref name="serviceType">serviceType</paramref>.   -or-  null if there is no service object of type <paramref name="serviceType">serviceType</paramref>.
+    /// </returns>
+    public object? GetService(Type serviceType, object? serviceKey = null)
     {
         var context = new ResolutionContext();
 
         if (serviceType.IsGenericType && serviceType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
         {
             var itemType = serviceType.GetGenericArguments()[0];
-            return ResolveEnumerable(itemType, null, null, context);
+            return ResolveEnumerable(itemType, null, null, context, serviceKey);
         }
 
-        return ResolveType(serviceType, null, null, context);
+        return ResolveType(serviceType, null, null, context, serviceKey);
     }
 
     /// <summary>
@@ -72,10 +83,11 @@ public sealed class ServiceProvider(IEnumerable<ServiceDescriptor> services, Ser
     /// <returns>A new <see cref="IServiceScope"/>.</returns>
     public IServiceScope CreateScope() => new ServiceScope(this);
 
-    internal object? ResolveType(Type serviceType, ServiceScope? scope, ServiceLifetime? rootLifetime, ResolutionContext context)
+    internal object? ResolveType(Type serviceType, ServiceScope? scope, ServiceLifetime? rootLifetime, ResolutionContext context, object? key = null)
     {
-        var descriptor = _serviceDescriptors.SingleOrDefault(p => p.ServiceType == serviceType)
-            ?? throw new InvalidOperationException($"Service of type {serviceType.FullName} is not registered.");
+        var descriptor = _serviceDescriptors.SingleOrDefault(p => p.ServiceType == serviceType && Equals(p.ServiceKey, key));
+
+        if (descriptor is null) return null;
 
         if (descriptor.Lifetime is ServiceLifetime.Singleton && descriptor.ImplementationInstance is not null)
             return descriptor.ImplementationInstance;
@@ -133,12 +145,13 @@ public sealed class ServiceProvider(IEnumerable<ServiceDescriptor> services, Ser
         }
     }
 
-    private Array ResolveEnumerable(Type itemType, ServiceScope? scope, ServiceLifetime? rootLifetime, ResolutionContext context)
+    private Array ResolveEnumerable(Type itemType, ServiceScope? scope, ServiceLifetime? rootLifetime, ResolutionContext context, object? serviceKey = null)
     {
         if (scope is null && _options.ValidateScopes)
         {
             var hasScoped = _serviceDescriptors.Any(d =>
-                d.ServiceType == itemType &&
+                d.ServiceType == itemType && 
+                Equals(d.ServiceKey, serviceKey) &&
                 d.Lifetime is ServiceLifetime.Scoped);
 
             if (hasScoped)
@@ -149,7 +162,7 @@ public sealed class ServiceProvider(IEnumerable<ServiceDescriptor> services, Ser
         }
 
         var implementations = _serviceDescriptors
-            .Where(d => d.ServiceType == itemType)
+            .Where(d => d.ServiceType == itemType && Equals(d.ServiceKey, serviceKey))
             .Select(d => ResolveDescriptorDirect(d, scope, rootLifetime, context))
             .ToList();
 

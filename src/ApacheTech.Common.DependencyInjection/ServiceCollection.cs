@@ -3,14 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using ApacheTech.Common.DependencyInjection.Abstractions;
 
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable UnusedType.Global
-// ReSharper disable UnusedMember.Global
-
 namespace ApacheTech.Common.DependencyInjection;
 
 /// <summary>
-/// Default implementation of <see cref="IServiceCollection" />.
+///     Default implementation of <see cref="IServiceCollection" />.
 /// </summary>
 /// <seealso cref="IServiceCollection" />
 /// <seealso cref="IDisposable" />
