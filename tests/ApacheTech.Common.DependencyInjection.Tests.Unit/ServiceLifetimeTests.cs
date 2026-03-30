@@ -244,6 +244,34 @@ public class ServiceLifetimeTests
     }
 
     [Fact]
+    public void GetService_ResolvesLastOrDefaultForMultipleMatches()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<ITestService, SingletonService>();
+        services.AddSingleton<ITestService, ScopedService>();
+
+        var provider = services.BuildServiceProvider();
+
+        var instance = (ITestService)provider.GetService(typeof(ITestService))!;
+
+        Assert.IsType<ScopedService>(instance);
+    }
+
+    [Fact]
+    public void GetRequiredService_ResolvesLastOrDefaultForMultipleMatches()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<ITestService, SingletonService>();
+        services.AddSingleton<ITestService, ScopedService>();
+
+        var provider = services.BuildServiceProvider();
+
+        var instance = (ITestService)provider.GetRequiredService(typeof(ITestService))!;
+
+        Assert.IsType<ScopedService>(instance);
+    }
+
+    [Fact]
     public void Dispose_DisposesWhenAssemblyMatches()
     {
         var services = new ServiceCollection();

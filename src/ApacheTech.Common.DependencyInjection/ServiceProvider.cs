@@ -83,7 +83,7 @@ public sealed class ServiceProvider(IEnumerable<ServiceDescriptor> services, Ser
 
     internal object? ResolveType(Type serviceType, ServiceScope? scope, ServiceLifetime? rootLifetime, ResolutionContext context, object? key = null)
     {
-        var descriptor = _serviceDescriptors.SingleOrDefault(p => p.ServiceType == serviceType && Equals(p.ServiceKey, key));
+        var descriptor = _serviceDescriptors.LastOrDefault(p => p.ServiceType == serviceType && Equals(p.ServiceKey, key));
 
         if (descriptor is null) return null;
 
